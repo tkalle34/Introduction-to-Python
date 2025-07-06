@@ -106,6 +106,7 @@ print((num2//10)%10)
 print(num2%10)
 
 
+
 """
 Problem #3
 (2 pts)
