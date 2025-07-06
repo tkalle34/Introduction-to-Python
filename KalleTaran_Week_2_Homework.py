@@ -3,7 +3,7 @@ PYTHON PROGRAMMING 1
 HOMEWORK
 WEEK TWO
 
-author: <YOUR NAME HERE>
+author: <Taran Kalle>
 ** be sure to RENAME the file <Last><First>_Week_2_Homework.py
 ** example: BeemerBill_Week_2_Homework.py
 """
@@ -104,6 +104,7 @@ print(num2//1000)
 print((num2//100)%10)
 print((num2//10)%10)
 print(num2%10)
+
 
 
 """
