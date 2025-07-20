@@ -84,11 +84,6 @@ class PlayerCharacter:
         self.moveOptions = [False,False,False,False] # North, East, South, West
         self.level = 1
 
-
-
-
-
-
     def attackDamage(self):
         return self.weapon.getDamage()
 
@@ -102,7 +97,8 @@ class RegularEnemy:
         self.xpReward = 10
         self.loot = random.randint(10,20)
 
-    def attackDamage(self):
+    @staticmethod
+    def attackDamage():
         return random.randint(2, 4)
 
 
@@ -114,9 +110,10 @@ class MiniBoss:
         self.attackBonus = 5
         self.armorClass = 14
         self.xpReward = 20
-        self.loot = random.int(20,30)
+        self.loot = random.randint(20,30)
 
-    def attackDamage(self):
+    @staticmethod
+    def attackDamage():
         return random.randint(3, 5)
 
 class Boss:
@@ -126,7 +123,8 @@ class Boss:
         self.attackBonus = 7
         self.armorClass = 18
 
-    def attackDamage(self):
+    @staticmethod
+    def attackDamage():
         return random.randint(5, 8)
 
 class Weapon:
@@ -139,14 +137,11 @@ class Weapon:
 
 
 def mainProgram():
-
+    print("The dungeon lair of the mad lich Vol'qaroth stands before you. The empty passage winds into the distance, disappearing in the darkness and gloom.")
 
     while not isGameOver:
 
-
-
-        print("Possible actions:")
-
+        print("Possible commands:")
 
         possibleMoves()
         if char.moveOptions[0]:
@@ -164,20 +159,19 @@ def mainProgram():
         if mapBase[char.curPos[0]][char.curPos[1]] == "c":
             print("Rest")
 
-
-
-        unsplitAction = input("Please select an action:").lower().split()
-
-        # CHECK FOR CORRECT INPUT
+        unsplitAction = input("Please select a command:").lower().split()
 
         if len(unsplitAction) == 1:
             userAction = unsplitAction[0]
         elif len(unsplitAction) == 2:
             userAction = unsplitAction[0]
             moveDirection = unsplitAction[1]
+        else:
+            print("Invalid command, please try again.")
+            continue
 
         # Do Actions
-        if userAction == "move":
+        if userAction == "move" and len(unsplitAction) == 2:
             move(moveDirection)
         elif userAction == "rest":
             rest()
@@ -190,36 +184,86 @@ def mainProgram():
             print("Armor: {0}".format(char.armorName))
         else:
             print("Invalid command, please try again.")
-
-
+            continue
 
         if mapBase[char.curPos[0]][char.curPos[1]] == ("e" or "m" or "x"):
             combat()
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
         elif mapBase[char.curPos[0]][char.curPos[1]] == "t":
-            char.treasure += random.int(50, 60)
+            print("A treasure chest lies before you, filled with gold coins and gems!")
+            oldTreasure = char.treasure
+            char.treasure += random.randint(50, 60)
+            print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
         elif mapBase[char.curPos[0]][char.curPos[1]] == "r":
-            char.treasure += random.int(80, 90)
+            print("You find a massive pile of treasure, golden crowns and diamonds, ruby necklaces and emerald rings, a true hoard.")
+            oldTreasure = char.treasure
+            char.treasure += random.randint(80, 90)
+            print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
         elif mapBase[char.curPos[0]][char.curPos[1]] == "a":
-            char.armorName = "Chainmail"
-            char.armorClass = 16
+            print("A skeleton lies on the floor, a hero of eras past. It still wears a set of chainmail.")
+            if char.armorName != "Plate":
+                char.armorName = "Chainmail"
+                char.armorClass = 16
+                print("Chainmail acquired!")
+            else:
+                print("You stuff it in your pack, your plate is far superior.")
+                oldTreasure = char.treasure
+                char.treasure += 40
+                print("Chainmail acquired!")
+                print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
         elif mapBase[char.curPos[0]][char.curPos[1]] == "p":
+            print("A set of shining plate armor stands in an alcove. Just sitting there. You uneasily put it on and discover it is exactly your size.")
+            if char.armorName == "Chainmail":
+                oldTreasure = char.treasure
+                char.treasure += 40
+                print("At least your chainmail will sell for some good money back in town.")
+                print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
             char.armorName = "Plate"
             char.armorClass = 18
+            print("Plate armor acquired!")
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
         elif mapBase[char.curPos[0]][char.curPos[1]] == "w":
-            char.weapon = longsword
-            char.weaponName = "Longsword"
+            print("A longsword leans against the wall. It seems in good condition.")
+            if char.weapon != magicalLongsword:
+                char.weapon = longsword
+                char.weaponName = "Longsword"
+                print("Longsword acquired!")
+            else:
+                oldTreasure = char.treasure
+                char.treasure += 20
+                print("At least it will sell for some nice coin in town.")
+                print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
         elif mapBase[char.curPos[0]][char.curPos[1]] == "l":
+            print("A statue stands in the alcove, a glittering sword held in its hands.")
             char.weapon = magicalLongsword
             char.weaponName = "Magical Longsword"
+            if char.weapon == longsword:
+                oldTreasure = char.treasure
+                char.treasure += 20
+                print("Your longsword will sell for some nice coin in town.")
+                print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
+            print("Magical longsword acquired!")
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
-
-
+        elif mapBase[char.curPos[0]][char.curPos[1]] == "o":
+            moveFlavor = ["The torches flicker with a breathless whisper, as though the walls themselves are exhaling.",
+                         "Your footsteps echo too long, as if the corridor resents your presence.",
+                         "Cracked stone underfoot hints at a battle long forgotten.",
+                         "A distant drip reverberates through the gloom, steady as a heartbeat.",
+                         "The air turns damp and metallic, clinging to your skin like a warning.",
+                         "Whispers brush your ears, but turn to silence when you try to listen.",
+                         "Moss creeps between ancient carvings, half erased by time and decay.",
+                         "The scent of old blood and burnt incense seeps from the stone.",
+                         "You pass beneath a crumbling arch etched with symbols too worn to read.",
+                         "A faint breeze brushes your cheek, though the air is still.",
+                         "Bones crunch faintly beneath your boot, brittle as dry leaves.",
+                         "Something skitters just out of sight, claws tapping stone.",
+                         "The walls lean in slightly, like they’re listening.",
+                         "You feel watched, though you’re alone... or so you hope."]
+            print(random.choice(moveFlavor))
 
 def addXP(experience: int):
     char.xp += experience
@@ -258,9 +302,11 @@ def combat():
     isEnemyDead = False
 
     while not isEnemyDead:
-        combatAction = input("Please select an action:").lower()
+        print("Possible commands:")
         print("Attack")
         print("Run")
+        print("Stats")
+        combatAction = input("Please select a command:").lower()
         # Player Turn
         if combatAction == "attack":
             if random.randint(1,20) + char.attackBonus >= enemy.armorClass:
@@ -281,8 +327,15 @@ def combat():
                     # ADD GAME OVER MESSAGE
                     isGameOver = True
                     break
+        elif combatAction == "stats":
+            print("Stats:")
+            print("Name: {0}".format(char.name))
+            print("Level: {0}".format(char.level))
+            print("Health: {0}/{1}".format(char.health, char.maxHealth))
+            print("Weapon: {0}".format(char.weaponName))
+            print("Armor: {0}".format(char.armorName))
         else:
-            print("Invalid action, please try again.")
+            print("Invalid command, please try again.")
             continue
         # Enemy Turn
         if random.randint(1,20) + enemy.attackBonus >= char.armorClass:
@@ -301,7 +354,6 @@ def rest():
 
 
 def move(direction):
-
     if direction == "north" and char.moveOptions[0]:
         char.lastPos[0] = char.curPos[0]
         char.lastPos[1] = char.curPos[1]
@@ -357,11 +409,6 @@ def possibleMoves():
         west = False
 
     char.moveOptions = [north, east, south, west]
-
-
-
-
-
 
 
 
