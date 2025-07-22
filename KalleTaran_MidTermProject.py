@@ -269,24 +269,37 @@ def addXP(experience: int):
     char.xp += experience
     if 40 <= char.xp < 80 and char.level != 2:
         print("{0} levels up to 2!".format(char.name))
+        oldHealth = char.health
         char.health += 5
+        oldMaxHealth = char.maxHealth
         char.maxHealth += 5
+        print("Health: {0}/{1} -> {2}/{3}".format(oldHealth, oldMaxHealth, char.health, char.maxHealth))
         char.attackBonus += 1
     elif 80 <= char.xp < 140 and char.level != 3:
         print("{0} levels up to 3!".format(char.name))
+        oldHealth = char.health
         char.health += 5
+        oldMaxHealth = char.maxHealth
         char.maxHealth += 5
+        print("Health: {0}/{1} -> {2}/{3}".format(oldHealth, oldMaxHealth, char.health, char.maxHealth))
         char.attackBonus += 1
     elif 140 <= char.xp < 200 and char.level != 4:
         print("{0} levels up to 4!".format(char.name))
+        oldHealth = char.health
         char.health += 5
+        oldMaxHealth = char.maxHealth
         char.maxHealth += 5
+        print("Health: {0}/{1} -> {2}/{3}".format(oldHealth, oldMaxHealth, char.health, char.maxHealth))
         char.attackBonus += 1
     elif 200 <= char.xp and char.level != 5:
         print("{0} levels up to 5!".format(char.name))
+        oldHealth = char.health
         char.health += 5
+        oldMaxHealth = char.maxHealth
         char.maxHealth += 5
+        print("Health: {0}/{1} -> {2}/{3}".format(oldHealth,oldMaxHealth,char.health,char.maxHealth))
         char.attackBonus += 1
+
 
 
 
@@ -297,6 +310,7 @@ def combat():
         enemy = MiniBoss()
     elif mapBase[char.curPos[0]][char.curPos[1]] == "x":
         enemy = Boss()
+
 
     global isGameOver
     isEnemyDead = False
@@ -349,9 +363,10 @@ def combat():
 
 
 def rest():
+    oldHealth = char.health
     char.health = char.maxHealth
     print("{0} takes a nice rest at the campfire.".format(char.name))
-
+    print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,char.maxHealth,char.health))
 
 def move(direction):
     if direction == "north" and char.moveOptions[0]:
