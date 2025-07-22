@@ -13,9 +13,12 @@ author: Taran Kalle
 """
 TODO
 
-Flavor Text
+Player Flavor Text
+Miniboss Flavor Text
+Boss Flavor Text
 End Game Screen
 """
+
 
 
 
@@ -96,6 +99,45 @@ class RegularEnemy:
         self.armorClass = 12
         self.xpReward = 10
         self.loot = random.randint(10,20)
+        self.attackFlavor = [
+                            [
+                                [["The goblin slashes wildly, cackling as its blade scrapes for flesh."],["The blade grazes your arm, leaving a stinging cut."],["The swing whistles past as you duck beneath it."]],
+                                [["It darts in low, aiming a nasty jab at your ribs with surprising speed."],["The dagger sinks into your side with a vicious grin."],["You twist just in time, and its blade strikes only air."]],
+                                [["With a hiss, it hurls a handful of dirt at your eyes before lunging in."],["The distraction works; your vision blurs as its knife bites deep."],["You shield your eyes and sidestep the feint with ease."]]
+                            ],
+                            [
+                                [["The orc roars and swings its axe in a brutal arc meant to cleave."],["The axe crashes into your shoulder, knocking you back a step."],["The heavy swing slams into the wall beside you, spraying stone chips."]],
+                                [["It charges forward, trying to batter you with sheer force and fury."],["You’re slammed against the wall, breath driven from your lungs."],["You roll aside, and the orc stumbles past with a snarl."]],
+                                [["The orc feints left, then smashes its fist toward your jaw."],["Its knuckles crack against your face with bone-rattling force."],["You duck under the punch and feel the wind of its fury rush by."]]
+                            ],
+                            [
+                                [["The rat lunges, yellowed teeth snapping at your ankle."],["Its teeth tear into flesh, and warm blood follows."],["You kick it away mid-leap, sending it tumbling."]],
+                                [["It scurries beneath your guard, trying to bite and claw in a frenzy."],["You feel sharp claws rake across your shin."],["You hop back just in time, its claws scraping the stone."]],
+                                [["A hiss, a blur of fur, and suddenly it’s clawing up your leg."],["It bites deep into your thigh before dropping away."],["You shake it off before it can latch on."]]
+                            ],
+                            [
+                                [["The zombie swings a rotten arm with clumsy, relentless force."],["Its arm slams into your chest with bruising weight."],["It stumbles past, groaning in frustration."]],
+                                [["It lurches forward, gnashing teeth aimed at your throat."],["Rotten jaws clamp down painfully on your shoulder."],["You shove its face away just in time, the teeth snapping shut inches from your skin."]],
+                                [["Slime drips from its grasp as it reaches out to pull you closer."],["Its grip tightens around your wrist, dragging you toward decay."],["You slip free, and it groans as you break contact."]]
+                            ],
+                            [
+                                [["Dry hands strike with surprising strength, wrapped fingers aiming to choke."],["The grip tightens around your throat, cutting off breath for a heartbeat."],["You twist free before its grasp can close."]],
+                                [["The mummy exhales a cursed breath as it lashes out with brittle rage."],["A wave of decay strikes your chest, numbing your limbs."],["You hold your breath and sidestep the blow just in time."]],
+                                [["It swings an ancient scepter with slow, terrible purpose."],["The scepter cracks against your ribs with dreadful weight."],["It thuds harmlessly against your shield with a puff of dust."]]
+                            ],
+                            [
+                                [["The skeleton lashes out with its blade, bones clacking with each movement."],["The blade slices a clean line across your forearm."],["You parry the strike, and sparks leap from your weapon."]],
+                                [["It spins suddenly, aiming a strike with inhuman precision."],["The tip pierces your side, cold steel kissing bone."],["You stagger back just in time, and the blade misses by inches."]],
+                                [["With a hiss of grinding joints, it jabs its weapon toward your chest."],["The jab connects, driving the breath from your lungs."],["You sidestep the thrust, and the skeleton clatters forward, off balance."]]
+                            ]
+
+        # [Enemy][Attack][Hit/Miss]
+        # 0 - Goblin, 1 - Orc, 2 - Giant Rat, 3 - Zombie, 4 - Mummy, 5 - Skeleton
+        # 0 - Attack, 1 - Hit, 2 - Miss
+
+
+
+        ]
 
     @staticmethod
     def attackDamage():
@@ -304,8 +346,27 @@ def addXP(experience: int):
 
 
 def combat():
+    enemyFlavorIndex = 0
     if mapBase[char.curPos[0]][char.curPos[1]] == "e":
         enemy = RegularEnemy()
+        if enemy.name == "Goblin":
+            print("With a shriek and a flash of rusted steel, a goblin lunges from the shadows, eyes gleaming with cruel mischief.")
+            enemyFlavorIndex = 0
+        elif enemy.name == "Orc":
+            print("The ground trembles slightly as an orc rounds the corner, muscles taut and tusked jaw clenched in anticipation of blood.")
+            enemyFlavorIndex = 1
+        elif enemy.name == "Giant Rat":
+            print("The stench hits first. Then the wet scurrying. And suddenly a rat the size of a dog bursts from a cracked wall.")
+            enemyFlavorIndex = 2
+        elif enemy.name == "Zombie":
+            print("You hear the drag of flesh on stone before you see it—then a corpse shambles into view, stitched together by stubborn hatred.")
+            enemyFlavorIndex = 3
+        elif enemy.name == "Mummy":
+            print("Bandages flutter like dry leaves as the mummy emerges, its ancient eyes smoldering with forgotten curses.")
+            enemyFlavorIndex = 4
+        elif enemy.name == "Skeleton":
+            print("With a hollow rattle, a skeleton assembles itself from a heap of bones, drawing a corroded blade with lifeless precision.")
+            enemyFlavorIndex = 5
     elif mapBase[char.curPos[0]][char.curPos[1]] == "m":
         enemy = MiniBoss()
     elif mapBase[char.curPos[0]][char.curPos[1]] == "x":
@@ -328,19 +389,30 @@ def combat():
                 if enemy.health <= 0:
                     isEnemyDead = True
                     addXP(enemy.xpReward)
+                    oldTreasure = char.treasure
                     char.treasure += enemy.loot
+                    print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
                     continue
             else:
                 pass # MISS
         elif combatAction == "run":
             char.curPos[0] = char.lastPos[0]
             char.curPos[1] = char.lastPos[1]
+            enemyAttackType = random.randint(1, 3)
+            print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
             if random.randint(1, 20) + enemy.attackBonus >= char.armorClass:
+                oldHealth = char.health
                 char.health -= enemy.attackDamage()
+                print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][1])
+                print("Health: {0}/{1} -> {2}/{1}".format(oldHealth, char.maxHealth, char.health))
                 if char.health <= 0:
                     # ADD GAME OVER MESSAGE
                     isGameOver = True
                     break
+            else:
+                print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
+                print("You manage to get away!")
+
         elif combatAction == "stats":
             print("Stats:")
             print("Name: {0}".format(char.name))
@@ -352,12 +424,34 @@ def combat():
             print("Invalid command, please try again.")
             continue
         # Enemy Turn
+
+
+        # if enemy.name == "Goblin":
+        #     print("")
+        # elif enemy.name == "Orc":
+        #     print("")
+        # elif enemy.name == "Giant Rat":
+        #     print("")
+        # elif enemy.name == "Zombie":
+        #     print("")
+        # elif enemy.name == "Mummy":
+        #     print("")
+        # elif enemy.name == "Skeleton":
+        #     print("")
+        enemyAttackType = random.randint(1,3)
+        print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
+
         if random.randint(1,20) + enemy.attackBonus >= char.armorClass:
+            oldHealth = char.health
             char.health -= enemy.attackDamage()
+            print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][1])
+            print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,char.maxHealth,char.health))
             if char.health <= 0:
                 # ADD GAME OVER MESSAGE
                 isGameOver = True
                 break
+        else:
+            print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
     if enemy.name == "Vol'qaro the Fallen":
         pass # END GAME
 
