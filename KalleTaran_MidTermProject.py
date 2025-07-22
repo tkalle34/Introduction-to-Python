@@ -14,9 +14,6 @@ author: Taran Kalle
 TODO
 
 Player Flavor Text
-Miniboss Flavor Text
-Boss Flavor Text
-End Game Screen
 """
 
 
@@ -129,10 +126,43 @@ class RegularEnemy:
                                 [["The skeleton lashes out with its blade, bones clacking with each movement."],["The blade slices a clean line across your forearm."],["You parry the strike, and sparks leap from your weapon."]],
                                 [["It spins suddenly, aiming a strike with inhuman precision."],["The tip pierces your side, cold steel kissing bone."],["You stagger back just in time, and the blade misses by inches."]],
                                 [["With a hiss of grinding joints, it jabs its weapon toward your chest."],["The jab connects, driving the breath from your lungs."],["You sidestep the thrust, and the skeleton clatters forward, off balance."]]
-                            ]
+                            ],
+                            [
+                                [["The Goblin Boss bellows and swings a jagged cleaver in a brutal arc."],["The cleaver bites deep, leaving a ragged, bleeding wound."],["You duck under the swing as it crashes into the wall, sparks flying."]],
+                                [["He feints with a dagger, then lunges low with uncanny speed."],["The blade slashes across your thigh before you can retreat."],["You leap back, and the blade whistles harmlessly past."]],
+                                [["With a sneer, he hurls a flask of burning oil toward your chest."],["The flask shatters on impact, igniting in a burst of searing flame."],["You dive aside, and fire scorches only the stone behind you."]]
+                            ],
+                            [
+                                [["The spider rears up and strikes with dripping fangs aimed at your neck."],["Its fangs pierce your skin, venom burning like fire."],["You dodge left, and the fangs snap shut inches from your face."]],
+                                [["It launches a glob of sticky webbing to pin your limbs."],["The web entangles your arms, slowing your movements dangerously."],["You roll clear, and the web splats harmlessly beside you."]],
+                                [["With eerie silence, it scuttles up the wall and drops toward you from above."],["The impact knocks you to the ground as its legs dig in."],["You leap away as it crashes down where you stood seconds ago."]]
+                            ],[
+                                [["The giant skeleton raises a rusted greatsword and brings it down with terrifying force."],["The sword slams into you, rattling bone and armor alike."],["You sidestep, and the blade embeds itself deep in the stone floor."]],
+                                [["It sweeps its massive arm to crush everything in its path."],["The blow flings you back, pain flaring through your chest."],["You duck just in time, the wind of the swing whipping past you."]],
+                                [["It slams its shield forward like a wall of bone and iron."],["The impact cracks into your ribs and knocks the breath from your lungs."],["You roll under the shield as it smashes into the wall with a boom."]]
+                            ],[
+                                [["The wizard chants an incantation, and a bolt of lightning arcs from his fingers."],["The bolt scorches across your body, muscles spasming from the shock."],["You dive aside as the lightning scorches a blackened scar into the ground."]],
+                                [["He thrusts his staff forward, conjuring a wave of force that barrels toward you."],["The blast sends you flying back, your ears ringing."],[" You brace yourself and stand your ground as the wave rushes past."]],
+                                [["With a cruel smirk, he flicks a mote of fire that blossoms into a roaring flame."],["The fireball erupts on your chest, igniting your cloak and searing your skin."],["You duck behind cover just as the explosion roars overhead."]]
+                            ],[
+                                [["Vol'qaroth raises his skeletal hand, and a torrent of shadow lances toward your heart."],["The darkness pierces you like ice, draining warmth and will alike."],["You hurl yourself aside, and the beam gouges a smoking trench in the floor."]],
+                                [["With a guttural incantation, he summons a swarm of spectral hands clawing from the ground."],["The ghostly claws seize your limbs, raking through flesh and spirit alike."],["You leap free just before the hands can close around your ankles."]],
+                                [["He lifts his staff skyward, and the air bends as he calls down a ring of withering flame."],["The necrotic fire sears your skin and soul, leaving a mark that does not fade."],["You vault through a gap in the flames, singed but untouched."]]
+                            ],
+
+
+
+
+
+
+
+
+
+
+
 
         # [Enemy][Attack][Hit/Miss]
-        # 0 - Goblin, 1 - Orc, 2 - Giant Rat, 3 - Zombie, 4 - Mummy, 5 - Skeleton
+        # 0 - Goblin, 1 - Orc, 2 - Giant Rat, 3 - Zombie, 4 - Mummy, 5 - Skeleton, 6 - Goblin Boss, 7 - Giant Spider, 8 - Giant Skeleton, 9 - Wizard, 10 - Vol'qaroth
         # 0 - Attack, 1 - Hit, 2 - Miss
 
 
@@ -164,6 +194,7 @@ class Boss:
         self.health = 25
         self.attackBonus = 7
         self.armorClass = 18
+        self.loot = random.randint(50,60)
 
     @staticmethod
     def attackDamage():
@@ -307,6 +338,8 @@ def mainProgram():
                          "You feel watched, though you’re alone... or so you hope."]
             print(random.choice(moveFlavor))
 
+
+
 def addXP(experience: int):
     char.xp += experience
     if 40 <= char.xp < 80 and char.level != 2:
@@ -369,9 +402,22 @@ def combat():
             enemyFlavorIndex = 5
     elif mapBase[char.curPos[0]][char.curPos[1]] == "m":
         enemy = MiniBoss()
+        if enemy.name == "Goblin Boss":
+            print("From the shadows steps a hulking goblin clad in mismatched armor, eyes gleaming with malice as he thumps a notched cleaver against his shield.")
+            enemyFlavorIndex = 6
+        elif enemy.name == "Giant Spider":
+            print("The webbed ceiling shudders, then tears, spilling down a massive, chittering spider, its eyes glistening like obsidian beads as venom drips from its fangs.")
+            enemyFlavorIndex =  7
+        elif enemy.name == "Giant Skeleton":
+            print("The chamber trembles as bones rise from the earth, assembling with unnatural speed into a towering warrior of death. Its jaw unhinges in a soundless roar as it lifts a blade larger than a man.")
+            enemyFlavorIndex = 8
+        elif enemy.name == "Wizard":
+            print("A gust of arcane wind howls through the hall as a robed figure floats into view, eyes aglow with bitter wisdom and wrath. His fingers trace runes in the air that burn with power.")
+            enemyFlavorIndex = 9
     elif mapBase[char.curPos[0]][char.curPos[1]] == "x":
         enemy = Boss()
-
+        print("The air grows deathly still as the chamber darkens, torches extinguishing one by one. Atop a blackened dais, a cloaked figure rises from a throne of bone and ruin, his skull crowned with a halo of sickly green flame.\n'I was king when your gods were dust,' Vol'qaroth intones, his voice echoing from everywhere and nowhere.\n'Come, let oblivion remember your name… if it must.'")
+        enemyFlavorIndex = 10
 
     global isGameOver
     isEnemyDead = False
@@ -387,6 +433,19 @@ def combat():
             if random.randint(1,20) + char.attackBonus >= enemy.armorClass:
                 enemy.health -= char.attackDamage()
                 if enemy.health <= 0:
+                    if enemy.name == "Vol'qaroth the Fallen":
+                        isEnemyDead = True
+                        isGameOver = True
+                        oldTreasure = char.treasure
+                        char.treasure += enemy.loot
+                        print("As his phylactery shatters and his form begins to unravel, Vol'qaroth’s voice fades into a raspy whisper:\n'You delay the inevitable. I am the echo that eternity does not forget...'")
+                        print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
+                        print("\n\n\n")
+                        print("--------------------")
+                        print("You win!")
+                        print("Treasure: {0}".format(char.treasure))
+                        print("--------------------")
+                        continue
                     isEnemyDead = True
                     addXP(enemy.xpReward)
                     oldTreasure = char.treasure
@@ -406,7 +465,14 @@ def combat():
                 print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][1])
                 print("Health: {0}/{1} -> {2}/{1}".format(oldHealth, char.maxHealth, char.health))
                 if char.health <= 0:
-                    # ADD GAME OVER MESSAGE
+                    if enemy.name != "Vol'qaroth the Fallen":
+                        print("Despite their prowess, {0} falls in battle to a {1}".format(char.name, enemy.name))
+                    else:
+                        print("The evil lich Vol'qaroth the Fallen claims another victim!")
+                    print("--------------------")
+                    print("You lose!")
+                    print("Treasure: {0}".format(char.treasure))
+                    print("--------------------")
                     isGameOver = True
                     break
             else:
@@ -447,13 +513,19 @@ def combat():
             print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][1])
             print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,char.maxHealth,char.health))
             if char.health <= 0:
-                # ADD GAME OVER MESSAGE
+                if enemy.name != "Vol'qaroth the Fallen":
+                    print("Despite their prowess, {0} falls in battle to a {1}".format(char.name,enemy.name))
+                else:
+                    print("The evil lich Vol'qaroth the Fallen claims another victim!")
+                print("--------------------")
+                print("You lose!")
+                print("Treasure: {0}".format(char.treasure))
+                print("--------------------")
                 isGameOver = True
                 break
         else:
             print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
-    if enemy.name == "Vol'qaro the Fallen":
-        pass # END GAME
+
 
 
 def rest():
