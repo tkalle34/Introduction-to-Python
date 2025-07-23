@@ -13,7 +13,8 @@ author: Taran Kalle
 """
 TODO
 
-Player Flavor Text
+Style Guide
+Bug Testing
 """
 
 
@@ -83,6 +84,23 @@ class PlayerCharacter:
         self.treasure = 0
         self.moveOptions = [False,False,False,False] # North, East, South, West
         self.level = 1
+        self.attackFlavor = [
+                            [
+                            ["You swing your blade in a clean arc, the steel singing through the air."],["The edge bites true, cutting a sharp line through flesh and armor."],["The blade slices only air as your target slips just out of reach."]
+                            ],
+                            [
+                            ["With a burst of speed, you lunge forward, aiming your sword at a vital point."],["The thrust lands solidly, driving steel deep with satisfying resistance."],["Your foe twists aside, and your blade skids harmlessly past."]
+                            ],
+                            [
+                            ["You twist into a tight slash, the edge of your weapon flashing in the dim light."],["The strike lands cleanly, drawing a spray of blood across the stone."],["You overextend, and the blade carves a scar into the ground instead."]
+                            ],
+                            [
+                            ["Gripping your sword with both hands, you bring it down in a crushing overhead strike."],["The blow crashes down with brutal force, staggering your opponent."],["The strike slams into the floor, sending sparks and stone flying."]
+                            ],
+                            [
+                            ["You feint left, then step in and drive your blade toward your foe’s guard."],["The trick works. The blade slips past their defense and strikes deep."],["They don’t fall for it, parrying your thrust with ease."]
+                            ]
+                            ]
 
     def attackDamage(self):
         return self.weapon.getDamage()
@@ -126,7 +144,28 @@ class RegularEnemy:
                                 [["The skeleton lashes out with its blade, bones clacking with each movement."],["The blade slices a clean line across your forearm."],["You parry the strike, and sparks leap from your weapon."]],
                                 [["It spins suddenly, aiming a strike with inhuman precision."],["The tip pierces your side, cold steel kissing bone."],["You stagger back just in time, and the blade misses by inches."]],
                                 [["With a hiss of grinding joints, it jabs its weapon toward your chest."],["The jab connects, driving the breath from your lungs."],["You sidestep the thrust, and the skeleton clatters forward, off balance."]]
-                            ],
+                            ]
+                            ]
+
+        # [Enemy][Attack][Hit/Miss]
+        # 0 - Goblin, 1 - Orc, 2 - Giant Rat, 3 - Zombie, 4 - Mummy, 5 - Skeleton
+        # 0 - Attack, 1 - Hit, 2 - Miss
+
+    @staticmethod
+    def attackDamage():
+        return random.randint(2, 4)
+
+
+class MiniBoss:
+    def __init__(self):
+        randName = random.choice(["Goblin Boss", "Giant Spider", "Giant Skeleton", "Wizard"])
+        self.name = randName
+        self.health = 15
+        self.attackBonus = 5
+        self.armorClass = 14
+        self.xpReward = 20
+        self.loot = random.randint(20,30)
+        self.attackFlavor = [
                             [
                                 [["The Goblin Boss bellows and swings a jagged cleaver in a brutal arc."],["The cleaver bites deep, leaving a ragged, bleeding wound."],["You duck under the swing as it crashes into the wall, sparks flying."]],
                                 [["He feints with a dagger, then lunges low with uncanny speed."],["The blade slashes across your thigh before you can retreat."],["You leap back, and the blade whistles harmlessly past."]],
@@ -144,45 +183,11 @@ class RegularEnemy:
                                 [["The wizard chants an incantation, and a bolt of lightning arcs from his fingers."],["The bolt scorches across your body, muscles spasming from the shock."],["You dive aside as the lightning scorches a blackened scar into the ground."]],
                                 [["He thrusts his staff forward, conjuring a wave of force that barrels toward you."],["The blast sends you flying back, your ears ringing."],[" You brace yourself and stand your ground as the wave rushes past."]],
                                 [["With a cruel smirk, he flicks a mote of fire that blossoms into a roaring flame."],["The fireball erupts on your chest, igniting your cloak and searing your skin."],["You duck behind cover just as the explosion roars overhead."]]
-                            ],[
-                                [["Vol'qaroth raises his skeletal hand, and a torrent of shadow lances toward your heart."],["The darkness pierces you like ice, draining warmth and will alike."],["You hurl yourself aside, and the beam gouges a smoking trench in the floor."]],
-                                [["With a guttural incantation, he summons a swarm of spectral hands clawing from the ground."],["The ghostly claws seize your limbs, raking through flesh and spirit alike."],["You leap free just before the hands can close around your ankles."]],
-                                [["He lifts his staff skyward, and the air bends as he calls down a ring of withering flame."],["The necrotic fire sears your skin and soul, leaving a mark that does not fade."],["You vault through a gap in the flames, singed but untouched."]]
-                            ],
-
-
-
-
-
-
-
-
-
-
-
-
+                            ]
+                            ]
         # [Enemy][Attack][Hit/Miss]
-        # 0 - Goblin, 1 - Orc, 2 - Giant Rat, 3 - Zombie, 4 - Mummy, 5 - Skeleton, 6 - Goblin Boss, 7 - Giant Spider, 8 - Giant Skeleton, 9 - Wizard, 10 - Vol'qaroth
+        # 0 - Goblin Boss, 1 - Giant Spider, 2 - Giant Skeleton, 3 - Wizard
         # 0 - Attack, 1 - Hit, 2 - Miss
-
-
-
-        ]
-
-    @staticmethod
-    def attackDamage():
-        return random.randint(2, 4)
-
-
-class MiniBoss:
-    def __init__(self):
-        randName = random.choice(["Goblin Boss", "Giant Spider", "Giant Skeleton", "Wizard"])
-        self.name = randName
-        self.health = 15
-        self.attackBonus = 5
-        self.armorClass = 14
-        self.xpReward = 20
-        self.loot = random.randint(20,30)
 
     @staticmethod
     def attackDamage():
@@ -195,6 +200,15 @@ class Boss:
         self.attackBonus = 7
         self.armorClass = 18
         self.loot = random.randint(50,60)
+        self.attackFlavor = [
+                                [["Vol'qaroth raises his skeletal hand, and a torrent of shadow lances toward your heart."],["The darkness pierces you like ice, draining warmth and will alike."],["You hurl yourself aside, and the beam gouges a smoking trench in the floor."]],
+                                [["With a guttural incantation, he summons a swarm of spectral hands clawing from the ground."],["The ghostly claws seize your limbs, raking through flesh and spirit alike."],["You leap free just before the hands can close around your ankles."]],
+                                [["He lifts his staff skyward, and the air bends as he calls down a ring of withering flame."],["The necrotic fire sears your skin and soul, leaving a mark that does not fade."],["You vault through a gap in the flames, singed but untouched."]]
+                            ]
+
+        # [Enemy][Attack][Hit/Miss]
+        # 0 - Vol'qaroth
+        # 0 - Attack, 1 - Hit, 2 - Miss
 
     @staticmethod
     def attackDamage():
@@ -231,7 +245,7 @@ def mainProgram():
             print("West")
         if mapBase[char.curPos[0]][char.curPos[1]] == "c":
             print("Rest")
-
+        print("Quit")
         unsplitAction = input("Please select a command:").lower().split()
 
         if len(unsplitAction) == 1:
@@ -255,6 +269,8 @@ def mainProgram():
             print("Health: {0}/{1}".format(char.health, char.maxHealth))
             print("Weapon: {0}".format(char.weaponName))
             print("Armor: {0}".format(char.armorName))
+        elif userAction == "quit":
+            break
         else:
             print("Invalid command, please try again.")
             continue
@@ -404,20 +420,20 @@ def combat():
         enemy = MiniBoss()
         if enemy.name == "Goblin Boss":
             print("From the shadows steps a hulking goblin clad in mismatched armor, eyes gleaming with malice as he thumps a notched cleaver against his shield.")
-            enemyFlavorIndex = 6
+            enemyFlavorIndex = 0
         elif enemy.name == "Giant Spider":
             print("The webbed ceiling shudders, then tears, spilling down a massive, chittering spider, its eyes glistening like obsidian beads as venom drips from its fangs.")
-            enemyFlavorIndex =  7
+            enemyFlavorIndex =  1
         elif enemy.name == "Giant Skeleton":
             print("The chamber trembles as bones rise from the earth, assembling with unnatural speed into a towering warrior of death. Its jaw unhinges in a soundless roar as it lifts a blade larger than a man.")
-            enemyFlavorIndex = 8
+            enemyFlavorIndex = 2
         elif enemy.name == "Wizard":
             print("A gust of arcane wind howls through the hall as a robed figure floats into view, eyes aglow with bitter wisdom and wrath. His fingers trace runes in the air that burn with power.")
-            enemyFlavorIndex = 9
+            enemyFlavorIndex = 3
     elif mapBase[char.curPos[0]][char.curPos[1]] == "x":
         enemy = Boss()
         print("The air grows deathly still as the chamber darkens, torches extinguishing one by one. Atop a blackened dais, a cloaked figure rises from a throne of bone and ruin, his skull crowned with a halo of sickly green flame.\n'I was king when your gods were dust,' Vol'qaroth intones, his voice echoing from everywhere and nowhere.\n'Come, let oblivion remember your name… if it must.'")
-        enemyFlavorIndex = 10
+        enemyFlavorIndex = 0
 
     global isGameOver
     isEnemyDead = False
@@ -430,7 +446,10 @@ def combat():
         combatAction = input("Please select a command:").lower()
         # Player Turn
         if combatAction == "attack":
+            charAttackType = random.randint(1,5)
+            print(char.attackFlavor[0][charAttackType][0])
             if random.randint(1,20) + char.attackBonus >= enemy.armorClass:
+                print(char.attackFlavor[0][charAttackType][1])
                 enemy.health -= char.attackDamage()
                 if enemy.health <= 0:
                     if enemy.name == "Vol'qaroth the Fallen":
@@ -453,7 +472,7 @@ def combat():
                     print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
                     continue
             else:
-                pass # MISS
+                print(char.attackFlavor[0][charAttackType][2])
         elif combatAction == "run":
             char.curPos[0] = char.lastPos[0]
             char.curPos[1] = char.lastPos[1]
@@ -478,7 +497,6 @@ def combat():
             else:
                 print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
                 print("You manage to get away!")
-
         elif combatAction == "stats":
             print("Stats:")
             print("Name: {0}".format(char.name))
@@ -486,24 +504,14 @@ def combat():
             print("Health: {0}/{1}".format(char.health, char.maxHealth))
             print("Weapon: {0}".format(char.weaponName))
             print("Armor: {0}".format(char.armorName))
+        elif combatAction == "quit":
+            isGameOver = True
+            break
         else:
             print("Invalid command, please try again.")
             continue
         # Enemy Turn
 
-
-        # if enemy.name == "Goblin":
-        #     print("")
-        # elif enemy.name == "Orc":
-        #     print("")
-        # elif enemy.name == "Giant Rat":
-        #     print("")
-        # elif enemy.name == "Zombie":
-        #     print("")
-        # elif enemy.name == "Mummy":
-        #     print("")
-        # elif enemy.name == "Skeleton":
-        #     print("")
         enemyAttackType = random.randint(1,3)
         print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
 
