@@ -79,27 +79,27 @@ class PlayerCharacter:
         self.armorName = "Leather Breastplate"
         self.armorClass = 14
         self.xp = 0
-        self.curPos = [0,1]
+        self.curPos = [0,1] # 0,1
         self.lastPos = [0,0]
         self.treasure = 0
         self.moveOptions = [False,False,False,False] # North, East, South, West
         self.level = 1
         self.attackFlavor = [
-                            [
-                            ["You swing your blade in a clean arc, the steel singing through the air."],["The edge bites true, cutting a sharp line through flesh and armor."],["The blade slices only air as your target slips just out of reach."]
-                            ],
-                            [
-                            ["With a burst of speed, you lunge forward, aiming your sword at a vital point."],["The thrust lands solidly, driving steel deep with satisfying resistance."],["Your foe twists aside, and your blade skids harmlessly past."]
-                            ],
-                            [
-                            ["You twist into a tight slash, the edge of your weapon flashing in the dim light."],["The strike lands cleanly, drawing a spray of blood across the stone."],["You overextend, and the blade carves a scar into the ground instead."]
-                            ],
-                            [
-                            ["Gripping your sword with both hands, you bring it down in a crushing overhead strike."],["The blow crashes down with brutal force, staggering your opponent."],["The strike slams into the floor, sending sparks and stone flying."]
-                            ],
-                            [
-                            ["You feint left, then step in and drive your blade toward your foe’s guard."],["The trick works. The blade slips past their defense and strikes deep."],["They don’t fall for it, parrying your thrust with ease."]
-                            ]
+
+                            ["You swing your blade in a clean arc, the steel singing through the air.","The edge bites true, cutting a sharp line through flesh and armor.","The blade slices only air as your target slips just out of reach."]
+                            ,
+
+                            ["With a burst of speed, you lunge forward, aiming your sword at a vital point.","The thrust lands solidly, driving steel deep with satisfying resistance.","Your foe twists aside, and your blade skids harmlessly past."]
+                            ,
+
+                            ["You twist into a tight slash, the edge of your weapon flashing in the dim light.","The strike lands cleanly, drawing a spray of blood across the stone.","You overextend, and the blade carves a scar into the ground instead."]
+                            ,
+
+                            ["Gripping your sword with both hands, you bring it down in a crushing overhead strike.","The blow crashes down with brutal force, staggering your opponent.","The strike slams into the floor, sending sparks and stone flying."]
+                            ,
+
+                            ["You feint left, then step in and drive your blade toward your foe’s guard.","The trick works. The blade slips past their defense and strikes deep.","They don’t fall for it, parrying your thrust with ease."]
+
                             ]
 
     def attackDamage(self):
@@ -114,36 +114,37 @@ class RegularEnemy:
         self.armorClass = 12
         self.xpReward = 10
         self.loot = random.randint(10,20)
+        self.deathFlavor = ["The goblin lets out a final snarl before crumpling to the floor, its dagger clattering beside it.","With a groan like splitting stone, the orc stumbles back, then crashes to the ground in a heap of muscle and fury spent.","The rat jerks once, then collapses with a sickening squelch, its twitching limbs finally still.","The corpse slumps mid-lurch, limbs unraveling as whatever foul magic held it together fades into the dust.","The mummy stiffens, then collapses into a brittle pile of cloth and bone, ancient curses fading with a whisper.","The skeleton shudders, then its joints give way, bones scattering across the stone floor like dry leaves in wind."]
         self.attackFlavor = [
                             [
-                                [["The goblin slashes wildly, cackling as its blade scrapes for flesh."],["The blade grazes your arm, leaving a stinging cut."],["The swing whistles past as you duck beneath it."]],
-                                [["It darts in low, aiming a nasty jab at your ribs with surprising speed."],["The dagger sinks into your side with a vicious grin."],["You twist just in time, and its blade strikes only air."]],
-                                [["With a hiss, it hurls a handful of dirt at your eyes before lunging in."],["The distraction works; your vision blurs as its knife bites deep."],["You shield your eyes and sidestep the feint with ease."]]
+                                ["The goblin slashes wildly, cackling as its blade scrapes for flesh.","The blade grazes your arm, leaving a stinging cut.","The swing whistles past as you duck beneath it."],
+                                ["It darts in low, aiming a nasty jab at your ribs with surprising speed.","The dagger sinks into your side with a vicious grin.","You twist just in time, and its blade strikes only air."],
+                                ["With a hiss, it hurls a handful of dirt at your eyes before lunging in.","The distraction works; your vision blurs as its knife bites deep.","You shield your eyes and sidestep the feint with ease."]
                             ],
                             [
-                                [["The orc roars and swings its axe in a brutal arc meant to cleave."],["The axe crashes into your shoulder, knocking you back a step."],["The heavy swing slams into the wall beside you, spraying stone chips."]],
-                                [["It charges forward, trying to batter you with sheer force and fury."],["You’re slammed against the wall, breath driven from your lungs."],["You roll aside, and the orc stumbles past with a snarl."]],
-                                [["The orc feints left, then smashes its fist toward your jaw."],["Its knuckles crack against your face with bone-rattling force."],["You duck under the punch and feel the wind of its fury rush by."]]
+                                ["The orc roars and swings its axe in a brutal arc meant to cleave.","The axe crashes into your shoulder, knocking you back a step.","The heavy swing slams into the wall beside you, spraying stone chips."],
+                                ["It charges forward, trying to batter you with sheer force and fury.","You’re slammed against the wall, breath driven from your lungs.","You roll aside, and the orc stumbles past with a snarl."],
+                                ["The orc feints left, then smashes its fist toward your jaw.","Its knuckles crack against your face with bone-rattling force.","You duck under the punch and feel the wind of its fury rush by."]
                             ],
                             [
-                                [["The rat lunges, yellowed teeth snapping at your ankle."],["Its teeth tear into flesh, and warm blood follows."],["You kick it away mid-leap, sending it tumbling."]],
-                                [["It scurries beneath your guard, trying to bite and claw in a frenzy."],["You feel sharp claws rake across your shin."],["You hop back just in time, its claws scraping the stone."]],
-                                [["A hiss, a blur of fur, and suddenly it’s clawing up your leg."],["It bites deep into your thigh before dropping away."],["You shake it off before it can latch on."]]
+                                ["The rat lunges, yellowed teeth snapping at your ankle.","Its teeth tear into flesh, and warm blood follows.","You kick it away mid-leap, sending it tumbling."],
+                                ["It scurries beneath your guard, trying to bite and claw in a frenzy.","You feel sharp claws rake across your shin.","You hop back just in time, its claws scraping the stone."],
+                                ["A hiss, a blur of fur, and suddenly it’s clawing up your leg.","It bites deep into your thigh before dropping away.","You shake it off before it can latch on."]
                             ],
                             [
-                                [["The zombie swings a rotten arm with clumsy, relentless force."],["Its arm slams into your chest with bruising weight."],["It stumbles past, groaning in frustration."]],
-                                [["It lurches forward, gnashing teeth aimed at your throat."],["Rotten jaws clamp down painfully on your shoulder."],["You shove its face away just in time, the teeth snapping shut inches from your skin."]],
-                                [["Slime drips from its grasp as it reaches out to pull you closer."],["Its grip tightens around your wrist, dragging you toward decay."],["You slip free, and it groans as you break contact."]]
+                                ["The zombie swings a rotten arm with clumsy, relentless force.","Its arm slams into your chest with bruising weight.","It stumbles past, groaning in frustration."],
+                                ["It lurches forward, gnashing teeth aimed at your throat.","Rotten jaws clamp down painfully on your shoulder.","You shove its face away just in time, the teeth snapping shut inches from your skin."],
+                                ["Slime drips from its grasp as it reaches out to pull you closer.","Its grip tightens around your wrist, dragging you toward decay.","You slip free, and it groans as you break contact."]
                             ],
                             [
-                                [["Dry hands strike with surprising strength, wrapped fingers aiming to choke."],["The grip tightens around your throat, cutting off breath for a heartbeat."],["You twist free before its grasp can close."]],
-                                [["The mummy exhales a cursed breath as it lashes out with brittle rage."],["A wave of decay strikes your chest, numbing your limbs."],["You hold your breath and sidestep the blow just in time."]],
-                                [["It swings an ancient scepter with slow, terrible purpose."],["The scepter cracks against your ribs with dreadful weight."],["It thuds harmlessly against your shield with a puff of dust."]]
+                                ["Dry hands strike with surprising strength, wrapped fingers aiming to choke.","The grip tightens around your throat, cutting off breath for a heartbeat.","You twist free before its grasp can close."],
+                                ["The mummy exhales a cursed breath as it lashes out with brittle rage.","A wave of decay strikes your chest, numbing your limbs.","You hold your breath and sidestep the blow just in time."],
+                                ["It swings an ancient scepter with slow, terrible purpose.","The scepter cracks against your ribs with dreadful weight.","It thuds harmlessly against your shield with a puff of dust."]
                             ],
                             [
-                                [["The skeleton lashes out with its blade, bones clacking with each movement."],["The blade slices a clean line across your forearm."],["You parry the strike, and sparks leap from your weapon."]],
-                                [["It spins suddenly, aiming a strike with inhuman precision."],["The tip pierces your side, cold steel kissing bone."],["You stagger back just in time, and the blade misses by inches."]],
-                                [["With a hiss of grinding joints, it jabs its weapon toward your chest."],["The jab connects, driving the breath from your lungs."],["You sidestep the thrust, and the skeleton clatters forward, off balance."]]
+                                ["The skeleton lashes out with its blade, bones clacking with each movement.","The blade slices a clean line across your forearm.","You parry the strike, and sparks leap from your weapon."],
+                                ["It spins suddenly, aiming a strike with inhuman precision.","The tip pierces your side, cold steel kissing bone.","You stagger back just in time, and the blade misses by inches."],
+                                ["With a hiss of grinding joints, it jabs its weapon toward your chest.","The jab connects, driving the breath from your lungs.","You sidestep the thrust, and the skeleton clatters forward, off balance."]
                             ]
                             ]
 
@@ -165,24 +166,27 @@ class MiniBoss:
         self.armorClass = 14
         self.xpReward = 20
         self.loot = random.randint(20,30)
+        self.deathFlavor = ["The Goblin Boss glares with sudden fear, clutching at a fresh wound before collapsing with a choked growl, ambition leaking into the dirt.","The spider convulses violently, legs curling inward as its body collapses with a wet thud and the chittering finally stops.","Cracks spread through the giant skeleton’s frame before it topples, bones splintering on the stone floor like brittle timber.","The wizard gasps, arcane light flickering in his eyes one final time before he collapses, robes pooling around a body gone limp and cold."]
         self.attackFlavor = [
                             [
-                                [["The Goblin Boss bellows and swings a jagged cleaver in a brutal arc."],["The cleaver bites deep, leaving a ragged, bleeding wound."],["You duck under the swing as it crashes into the wall, sparks flying."]],
-                                [["He feints with a dagger, then lunges low with uncanny speed."],["The blade slashes across your thigh before you can retreat."],["You leap back, and the blade whistles harmlessly past."]],
-                                [["With a sneer, he hurls a flask of burning oil toward your chest."],["The flask shatters on impact, igniting in a burst of searing flame."],["You dive aside, and fire scorches only the stone behind you."]]
+                                ["The Goblin Boss bellows and swings a jagged cleaver in a brutal arc.","The cleaver bites deep, leaving a ragged, bleeding wound.","You duck under the swing as it crashes into the wall, sparks flying."],
+                                ["He feints with a dagger, then lunges low with uncanny speed.","The blade slashes across your thigh before you can retreat.","You leap back, and the blade whistles harmlessly past."],
+                                ["With a sneer, he hurls a flask of burning oil toward your chest.","The flask shatters on impact, igniting in a burst of searing flame.","You dive aside, and fire scorches only the stone behind you."]
                             ],
                             [
-                                [["The spider rears up and strikes with dripping fangs aimed at your neck."],["Its fangs pierce your skin, venom burning like fire."],["You dodge left, and the fangs snap shut inches from your face."]],
-                                [["It launches a glob of sticky webbing to pin your limbs."],["The web entangles your arms, slowing your movements dangerously."],["You roll clear, and the web splats harmlessly beside you."]],
-                                [["With eerie silence, it scuttles up the wall and drops toward you from above."],["The impact knocks you to the ground as its legs dig in."],["You leap away as it crashes down where you stood seconds ago."]]
-                            ],[
-                                [["The giant skeleton raises a rusted greatsword and brings it down with terrifying force."],["The sword slams into you, rattling bone and armor alike."],["You sidestep, and the blade embeds itself deep in the stone floor."]],
-                                [["It sweeps its massive arm to crush everything in its path."],["The blow flings you back, pain flaring through your chest."],["You duck just in time, the wind of the swing whipping past you."]],
-                                [["It slams its shield forward like a wall of bone and iron."],["The impact cracks into your ribs and knocks the breath from your lungs."],["You roll under the shield as it smashes into the wall with a boom."]]
-                            ],[
-                                [["The wizard chants an incantation, and a bolt of lightning arcs from his fingers."],["The bolt scorches across your body, muscles spasming from the shock."],["You dive aside as the lightning scorches a blackened scar into the ground."]],
-                                [["He thrusts his staff forward, conjuring a wave of force that barrels toward you."],["The blast sends you flying back, your ears ringing."],[" You brace yourself and stand your ground as the wave rushes past."]],
-                                [["With a cruel smirk, he flicks a mote of fire that blossoms into a roaring flame."],["The fireball erupts on your chest, igniting your cloak and searing your skin."],["You duck behind cover just as the explosion roars overhead."]]
+                                ["The spider rears up and strikes with dripping fangs aimed at your neck.","Its fangs pierce your skin, venom burning like fire.","You dodge left, and the fangs snap shut inches from your face."],
+                                ["It launches a glob of sticky webbing to pin your limbs.","The web entangles your arms, slowing your movements dangerously.","You roll clear, and the web splats harmlessly beside you."],
+                                ["With eerie silence, it scuttles up the wall and drops toward you from above.","The impact knocks you to the ground as its legs dig in.","You leap away as it crashes down where you stood seconds ago."]
+                            ],
+                            [
+                                ["The giant skeleton raises a rusted greatsword and brings it down with terrifying force.","The sword slams into you, rattling bone and armor alike.","You sidestep, and the blade embeds itself deep in the stone floor."],
+                                ["It sweeps its massive arm to crush everything in its path.","The blow flings you back, pain flaring through your chest.","You duck just in time, the wind of the swing whipping past you."],
+                                ["It slams its shield forward like a wall of bone and iron.","The impact cracks into your ribs and knocks the breath from your lungs.","You roll under the shield as it smashes into the wall with a boom."]
+                            ],
+                            [
+                                ["The wizard chants an incantation, and a bolt of lightning arcs from his fingers.","The bolt scorches across your body, muscles spasming from the shock.","You dive aside as the lightning scorches a blackened scar into the ground."],
+                                ["He thrusts his staff forward, conjuring a wave of force that barrels toward you.","The blast sends you flying back, your ears ringing."," You brace yourself and stand your ground as the wave rushes past."],
+                                ["With a cruel smirk, he flicks a mote of fire that blossoms into a roaring flame.","The fireball erupts on your chest, igniting your cloak and searing your skin.","You duck behind cover just as the explosion roars overhead."]
                             ]
                             ]
         # [Enemy][Attack][Hit/Miss]
@@ -200,11 +204,11 @@ class Boss:
         self.attackBonus = 7
         self.armorClass = 18
         self.loot = random.randint(50,60)
-        self.attackFlavor = [
-                                [["Vol'qaroth raises his skeletal hand, and a torrent of shadow lances toward your heart."],["The darkness pierces you like ice, draining warmth and will alike."],["You hurl yourself aside, and the beam gouges a smoking trench in the floor."]],
-                                [["With a guttural incantation, he summons a swarm of spectral hands clawing from the ground."],["The ghostly claws seize your limbs, raking through flesh and spirit alike."],["You leap free just before the hands can close around your ankles."]],
-                                [["He lifts his staff skyward, and the air bends as he calls down a ring of withering flame."],["The necrotic fire sears your skin and soul, leaving a mark that does not fade."],["You vault through a gap in the flames, singed but untouched."]]
-                            ]
+        self.attackFlavor = [[
+                                ["Vol'qaroth raises his skeletal hand, and a torrent of shadow lances toward your heart.","The darkness pierces you like ice, draining warmth and will alike.","You hurl yourself aside, and the beam gouges a smoking trench in the floor."],
+                                ["With a guttural incantation, he summons a swarm of spectral hands clawing from the ground.","The ghostly claws seize your limbs, raking through flesh and spirit alike.","You leap free just before the hands can close around your ankles."],
+                                ["He lifts his staff skyward, and the air bends as he calls down a ring of withering flame.","The necrotic fire sears your skin and soul, leaving a mark that does not fade.","You vault through a gap in the flames, singed but untouched."]
+                            ]]
 
         # [Enemy][Attack][Hit/Miss]
         # 0 - Vol'qaroth
@@ -275,7 +279,7 @@ def mainProgram():
             print("Invalid command, please try again.")
             continue
 
-        if mapBase[char.curPos[0]][char.curPos[1]] == ("e" or "m" or "x"):
+        if mapBase[char.curPos[0]][char.curPos[1]] == "e" or mapBase[char.curPos[0]][char.curPos[1]] == "m" or mapBase[char.curPos[0]][char.curPos[1]] == "x":
             combat()
             mapBase[char.curPos[0]][char.curPos[1]] = "o"
         elif mapBase[char.curPos[0]][char.curPos[1]] == "t":
@@ -353,7 +357,8 @@ def mainProgram():
                          "The walls lean in slightly, like they’re listening.",
                          "You feel watched, though you’re alone... or so you hope."]
             print(random.choice(moveFlavor))
-
+        elif mapBase[char.curPos[0]][char.curPos[1]] == "c":
+            print("A good place to make camp. Maybe time for a rest.")
 
 
 def addXP(experience: int):
@@ -366,6 +371,7 @@ def addXP(experience: int):
         char.maxHealth += 5
         print("Health: {0}/{1} -> {2}/{3}".format(oldHealth, oldMaxHealth, char.health, char.maxHealth))
         char.attackBonus += 1
+        char.level = 2
     elif 80 <= char.xp < 140 and char.level != 3:
         print("{0} levels up to 3!".format(char.name))
         oldHealth = char.health
@@ -374,6 +380,7 @@ def addXP(experience: int):
         char.maxHealth += 5
         print("Health: {0}/{1} -> {2}/{3}".format(oldHealth, oldMaxHealth, char.health, char.maxHealth))
         char.attackBonus += 1
+        char.level = 3
     elif 140 <= char.xp < 200 and char.level != 4:
         print("{0} levels up to 4!".format(char.name))
         oldHealth = char.health
@@ -382,6 +389,7 @@ def addXP(experience: int):
         char.maxHealth += 5
         print("Health: {0}/{1} -> {2}/{3}".format(oldHealth, oldMaxHealth, char.health, char.maxHealth))
         char.attackBonus += 1
+        char.level = 4
     elif 200 <= char.xp and char.level != 5:
         print("{0} levels up to 5!".format(char.name))
         oldHealth = char.health
@@ -390,7 +398,7 @@ def addXP(experience: int):
         char.maxHealth += 5
         print("Health: {0}/{1} -> {2}/{3}".format(oldHealth,oldMaxHealth,char.health,char.maxHealth))
         char.attackBonus += 1
-
+        char.level = 5
 
 
 
@@ -446,10 +454,10 @@ def combat():
         combatAction = input("Please select a command:").lower()
         # Player Turn
         if combatAction == "attack":
-            charAttackType = random.randint(1,5)
-            print(char.attackFlavor[0][charAttackType][0])
+            charAttackType = random.randint(0,4)
+            print(char.attackFlavor[charAttackType][0])
             if random.randint(1,20) + char.attackBonus >= enemy.armorClass:
-                print(char.attackFlavor[0][charAttackType][1])
+                print(char.attackFlavor[charAttackType][1])
                 enemy.health -= char.attackDamage()
                 if enemy.health <= 0:
                     if enemy.name == "Vol'qaroth the Fallen":
@@ -465,6 +473,8 @@ def combat():
                         print("Treasure: {0}".format(char.treasure))
                         print("--------------------")
                         continue
+                    else:
+                        print(enemy.deathFlavor)
                     isEnemyDead = True
                     addXP(enemy.xpReward)
                     oldTreasure = char.treasure
@@ -472,11 +482,12 @@ def combat():
                     print("Treasure: {0} -> {1}".format(oldTreasure, char.treasure))
                     continue
             else:
-                print(char.attackFlavor[0][charAttackType][2])
+                print(char.attackFlavor[charAttackType][2])
         elif combatAction == "run":
             char.curPos[0] = char.lastPos[0]
             char.curPos[1] = char.lastPos[1]
-            enemyAttackType = random.randint(1, 3)
+            print("One last strike comes at you.")
+            enemyAttackType = random.randint(0, 2)
             print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
             if random.randint(1, 20) + enemy.attackBonus >= char.armorClass:
                 oldHealth = char.health
@@ -490,13 +501,13 @@ def combat():
                         print("The evil lich Vol'qaroth the Fallen claims another victim!")
                     print("--------------------")
                     print("You lose!")
-                    print("Treasure: {0}".format(char.treasure))
                     print("--------------------")
                     isGameOver = True
                     break
             else:
                 print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
-                print("You manage to get away!")
+            print("You manage to get away!")
+            break
         elif combatAction == "stats":
             print("Stats:")
             print("Name: {0}".format(char.name))
@@ -512,7 +523,7 @@ def combat():
             continue
         # Enemy Turn
 
-        enemyAttackType = random.randint(1,3)
+        enemyAttackType = random.randint(0,2)
         print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
 
         if random.randint(1,20) + enemy.attackBonus >= char.armorClass:
@@ -527,7 +538,6 @@ def combat():
                     print("The evil lich Vol'qaroth the Fallen claims another victim!")
                 print("--------------------")
                 print("You lose!")
-                print("Treasure: {0}".format(char.treasure))
                 print("--------------------")
                 isGameOver = True
                 break
@@ -539,7 +549,7 @@ def combat():
 def rest():
     oldHealth = char.health
     char.health = char.maxHealth
-    print("{0} takes a nice rest at the campfire.".format(char.name))
+    print("You takes a nice rest at the campfire.")
     print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,char.maxHealth,char.health))
 
 def move(direction):
@@ -598,8 +608,6 @@ def possibleMoves():
         west = False
 
     char.moveOptions = [north, east, south, west]
-
-
 
 
 if __name__ == "__main__":
