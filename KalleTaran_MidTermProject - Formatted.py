@@ -2,19 +2,21 @@
 Mid-Term Project
 Python 1
 UCLA Extension
-author: Taran Kalle
+Author: Taran Kalle
 
-< Description of the program >
-
-** be sure to RENAME the file <Last><First>_MidTermProject.py
-** example: BeemerBill_MidTermProject.py
+Text based dungeon crawler game
+The player explores a dungeon map, encounters enemies and bosses, collects treasure,
+and upgrades weapons and armor. Movement, combat, leveling, and narrative flavor
+text are all included.
 """
-
 
 
 import random
 
+# Global flag to track game state
 ISGAMEOVER = False
+
+# MAPBASE: a 26x26 grid representing the dungeon map
 MAPBASE = [
           # 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
     # 18  19  20  21  22  23  24  25
@@ -89,6 +91,12 @@ MAPBASE = [
 
 class PlayerCharacter:
     def __init__(self, name: str, weapon):
+        """
+        Represents the player's character with stats, equipment, and combat abilities.
+
+        @param name: str. The name of the player character.
+        @param weapon: Weapon. The starting weapon assigned to the character.
+        """
         self.name = name
         self.health = 20
         self.maxHealth = 20
@@ -98,13 +106,13 @@ class PlayerCharacter:
         self.armorName = "Leather Breastplate"
         self.armorClass = 14
         self.xp = 0
-        self.curPos = [0,1] # 0,1
-        self.lastPos = [0,0]
+        self.curPos = [0,1] # Current position on the map
+        self.lastPos = [0,0] # Previous position on the map
         self.treasure = 0
         self.moveOptions = [False,False,False,False] # North, East, South, West
         self.level = 1
-        self.attackFlavor = [
-
+        self.attackFlavor = [ # List of attack narration strings grouped by type
+                              # ["description", "hit effect", "miss effect"]
                             ["You swing your blade in a clean arc, the steel "
                             "singing through the air.","The edge bites true, "
                             "cutting a sharp line through flesh and armor.",
@@ -143,9 +151,21 @@ class PlayerCharacter:
                             ]
 
     def attackDamage(self):
+        """
+        Calculate the character's weapon damage.
+
+        @return: int. Randomized attack damage based on weapon.
+        """
         return self.weapon.getDamage()
 
+
 class RegularEnemy:
+    """
+    Represents a basic enemy with standard health and attack.
+
+    Attributes include health, attack bonus, armor class, XP reward, and loot value.
+    Flavor text is provided for attacks and deaths based on enemy type.
+    """
     def __init__(self):
         randName = random.choice(["Goblin", "Orc", "Giant Rat", "Zombie", "Mummy",
                                   "Skeleton"])
@@ -170,8 +190,10 @@ class RegularEnemy:
                             "whisper.",
                             "The skeleton shudders, then its joints give way, "
                             "bones scattering across the stone floor like dry "
-                            "leaves in wind."]
-        self.attackFlavor = [
+                            "leaves in wind."] # Describes enemy death (one per type)
+        self.attackFlavor = [# Nested list for attack descriptions per enemy type
+                             # Format: [ [attack, hit, miss], [attack, hit, miss],
+                             # ... ]
                             [
                                 ["The goblin slashes wildly, cackling as its blade "
                                  "scrapes for flesh.","The blade grazes your arm, "
@@ -276,10 +298,21 @@ class RegularEnemy:
 
     @staticmethod
     def attackDamage():
+        """
+        Generate randomized damage for a regular enemy.
+
+        @return: int. The attack damage value.
+        """
         return random.randint(2, 4)
 
 
 class MiniBoss:
+    """
+    Represents a mini-boss enemy with more health, stronger attacks,
+    and enhanced loot and XP.
+
+    The mini-boss type is selected randomly from a fixed list.
+    """
     def __init__(self):
         randName = random.choice(["Goblin Boss", "Giant Spider", "Giant Skeleton",
                                   "Wizard"])
@@ -301,7 +334,8 @@ class MiniBoss:
                             "The wizard gasps, arcane light flickering in his eyes "
                             "one final time before he collapses, robes pooling "
                             "around a body gone limp and cold."]
-        self.attackFlavor = [
+                            # Narrative strings that describe mini-boss deaths
+        self.attackFlavor = [   # Flavor text: [ [attack, hit, miss], ... ]
                             [
                                 ["The Goblin Boss bellows and swings a jagged "
                                  "cleaver in a brutal arc.","The cleaver bites "
@@ -386,16 +420,28 @@ class MiniBoss:
 
     @staticmethod
     def attackDamage():
+        """
+        Generate randomized damage for a miniboss.
+
+        @return: int. The attack damage value.
+        """
         return random.randint(3, 5)
 
+
 class Boss:
+    """
+    Represents the final boss, Vol'qaroth the Fallen, with high stats and unique attacks.
+
+    The boss has special combat dialogue and ending sequences.
+    """
     def __init__(self):
         self.name = "Vol'qaroth the Fallen"
         self.health = 25
         self.attackBonus = 7
         self.armorClass = 18
         self.loot = random.randint(50,60)
-        self.attackFlavor = [[
+        self.attackFlavor = [[# Narrative attack descriptions for the boss: [ [
+                              # attack, hit, miss], ... ]
                                 ["Vol'qaroth raises his skeletal hand, "
                                  "and a torrent of shadow lances toward your heart.",
                                  "The darkness pierces you like ice, draining "
@@ -422,18 +468,41 @@ class Boss:
 
     @staticmethod
     def attackDamage():
+        """
+        Generate randomized damage for the final boss.
+
+        @return: int. The attack damage value.
+        """
         return random.randint(5, 8)
 
+
 class Weapon:
+    """
+    Represents a weapon with a variable damage range.
+
+    @param minDmg: int. The minimum possible damage.
+    @param maxDmg: int. The maximum possible damage.
+    """
     def __init__(self, minDmg, maxDmg):
         self.minDmg = minDmg
         self.maxDmg = maxDmg
+
     def getDamage(self):
+        """
+        Returns a randomized damage value for this weapon.
+
+        @return: int. Randomized damage between minDmg and maxDmg.
+        """
         return random.randint(self.minDmg, self.maxDmg)
 
 
-
 def mainProgram():
+    """
+    Main game loop that handles player input, movement, events, and encounters.
+
+    Displays movement options, handles player actions, and resolves tile-based
+    events such as enemies, loot, treasure, or rest points.
+    """
     print("The dungeon lair of the mad lich Vol'qaroth stands before you. "
           "The empty passage winds into the distance, disappearing in the darkness "
           "and gloom.")
@@ -446,17 +515,22 @@ def mainProgram():
         if char.moveOptions[0]:
             print("Move", end=" ")
             print("North")
+
         if char.moveOptions[1]:
             print("Move", end=" ")
             print("East")
+
         if char.moveOptions[2]:
             print("Move", end=" ")
             print("South")
+
         if char.moveOptions[3]:
             print("Move", end=" ")
             print("West")
+
         if MAPBASE[char.curPos[0]][char.curPos[1]] == "c":
             print("Rest")
+
         print("Quit")
         unsplitAction = input("Please select a command:").lower().split()
 
@@ -487,6 +561,7 @@ def mainProgram():
             print("Invalid command, please try again.")
             continue
 
+        # Tile interaction logic
         if (MAPBASE[char.curPos[0]][char.curPos[1]] == "e"
                 or MAPBASE[char.curPos[0]][char.curPos[1]] == "m" or
                 MAPBASE[char.curPos[0]][char.curPos[1]] == "x"):
@@ -590,6 +665,19 @@ def mainProgram():
 
 
 def addXP(experience: int):
+    """
+    Adds experience points to the player and levels them up when reaching thresholds.
+
+    Level thresholds:
+    - Level 2: 40 XP
+    - Level 3: 80 XP
+    - Level 4: 140 XP
+    - Level 5: 200 XP
+
+    Each level up increases max health and attack bonus.
+
+    @param experience: int. Amount of XP gained from defeating enemies.
+    """
     char.xp += experience
     if 40 <= char.xp < 80 and char.level != 2:
         print("{0} levels up to 2!".format(char.name))
@@ -633,11 +721,21 @@ def addXP(experience: int):
         char.level = 5
 
 
-
 def combat():
+    """
+    Handles the full turn based combat system between the player and an enemy
+    (regular, miniboss, or final boss) on the current tile.
+
+    Players can choose to attack, run, or check their stats. Combat continues
+    until the enemy or player is defeated, or the player runs away. Loot and
+    XP are awarded on victory.
+    """
     enemyFlavorIndex = 0
+
+    # Determine enemy type based on map tile
     if MAPBASE[char.curPos[0]][char.curPos[1]] == "e":
         enemy = RegularEnemy()
+
         if enemy.name == "Goblin":
             print("With a shriek and a flash of rusted steel, a goblin lunges from "
                   "the shadows, eyes gleaming with cruel mischief.")
@@ -698,13 +796,15 @@ def combat():
     global ISGAMEOVER
     isEnemyDead = False
 
+    # Combat loop
     while not isEnemyDead:
+        # Player Turn
         print("Possible commands:")
         print("Attack")
         print("Run")
         print("Stats")
         combatAction = input("Please select a command:").lower()
-        # Player Turn
+
         if combatAction == "attack":
             charAttackType = random.randint(0,4)
             print(char.attackFlavor[charAttackType][0])
@@ -741,9 +841,11 @@ def combat():
             else:
                 print(char.attackFlavor[charAttackType][2])
         elif combatAction == "run":
+            # Move back to last position
             char.curPos[0] = char.lastPos[0]
             char.curPos[1] = char.lastPos[1]
             print("One last strike comes at you.")
+            # Enemy gets one attack on the way out
             enemyAttackType = random.randint(0, 2)
             print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
             if random.randint(1, 20) + enemy.attackBonus >= char.armorClass:
@@ -782,8 +884,8 @@ def combat():
         else:
             print("Invalid command, please try again.")
             continue
-        # Enemy Turn
 
+        # Enemy Turn
         enemyAttackType = random.randint(0,2)
         print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
 
@@ -809,8 +911,12 @@ def combat():
             print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
 
 
-
 def rest():
+    """
+    Fully restores the player's health at a campfire.
+
+    This can only be done at a tile marked 'c' (campfire).
+    """
     oldHealth = char.health
     char.health = char.maxHealth
     print("You takes a nice rest at the campfire.")
@@ -818,6 +924,13 @@ def rest():
                                               char.maxHealth,char.health))
 
 def move(direction):
+    """
+    Moves the player one tile in the given direction if the path is valid.
+
+    Updates the player's current and last position.
+
+    @param direction: str. One of "north", "east", "south", or "west".
+    """
     if direction == "north" and char.moveOptions[0]:
         char.lastPos[0] = char.curPos[0]
         char.lastPos[1] = char.curPos[1]
@@ -837,10 +950,15 @@ def move(direction):
     else:
         print("That is not a valid direction")
 
-    # print("Current position is: {0}".format(char.curPos))
 
 def possibleMoves():
-    if char.curPos[0] != 0:
+    """
+    Updates the player's moveOptions list to indicate possible movement directions
+    (north, east, south, west) based on walls in the map.
+
+    @return: None. Modifies char.moveOptions in place.
+    """
+    if char.curPos[0] != 0: # North
         if MAPBASE[char.curPos[0]-1][char.curPos[1]] != "#":
             north = True
         else:
@@ -848,7 +966,7 @@ def possibleMoves():
     else:
         north = False
 
-    if char.curPos[0] != 25:
+    if char.curPos[0] != 25: # South
         if MAPBASE[char.curPos[0]+1][char.curPos[1]] != "#":
             south = True
         else:
@@ -856,7 +974,7 @@ def possibleMoves():
     else:
         south = False
 
-    if char.curPos[1] != 25:
+    if char.curPos[1] != 25: # East
         if MAPBASE[char.curPos[0]][char.curPos[1]+1] != "#":
             east = True
         else:
@@ -864,7 +982,7 @@ def possibleMoves():
     else:
         east = False
 
-    if char.curPos[1] != 0:
+    if char.curPos[1] != 0: # West
         if MAPBASE[char.curPos[0]][char.curPos[1]-1] != "#":
             west = True
         else:
@@ -874,7 +992,13 @@ def possibleMoves():
 
     char.moveOptions = [north, east, south, west]
 
+
+# ========== Game Start ==========
 if __name__ == "__main__":
+    """
+    Entry point of the program. Prompts for player name, initializes character,
+    and starts the main game loop.
+    """
     shortsword = Weapon(4, 6)
     longsword = Weapon(5, 7)
     magicalLongsword = Weapon(6, 8)
