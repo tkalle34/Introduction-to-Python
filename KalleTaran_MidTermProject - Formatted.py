@@ -830,7 +830,7 @@ def combat():
                         print("--------------------")
                         continue
                     else:
-                        print(enemy.deathFlavor)
+                        print(enemy.deathFlavor[enemyFlavorIndex])
                     isEnemyDead = True
                     addXP(enemy.xpReward)
                     oldTreasure = char.treasure
