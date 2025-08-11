@@ -430,7 +430,8 @@ class MiniBoss:
 
 class Boss:
     """
-    Represents the final boss, Vol'qaroth the Fallen, with high stats and unique attacks.
+    Represents the final boss, Vol'qaroth the Fallen, with high stats and unique
+    attacks.
 
     The boss has special combat dialogue and ending sequences.
     """
