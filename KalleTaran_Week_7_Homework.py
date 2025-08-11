@@ -399,7 +399,6 @@ def needsDelivery(filePath: str) -> None:
     print(f"Needs Delivery : {filePath}")
 
 
-
 def load_file_to_list(filename: str) -> list[str]:
     with open(filename, "r") as file:
         return [line.strip() for line in file]
