@@ -409,7 +409,6 @@ postShots = load_file_to_list("BonusPost.txt")
 deliveryShots = load_file_to_list("BonusDelivery.txt")
 
 
-
 missingPost = []
 missingDelivery = []
 
