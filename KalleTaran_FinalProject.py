@@ -89,20 +89,59 @@ MAPBASE = [
           # "x" - boss
 
 class Character:
-    def __init__(self, health, attackBonus, armorClass,
-                 xpReward, loot, weapon):
+    def __init__(self, type, health, attackBonus, armorClass,
+                 xpReward, loot, weapon, attackFlavor, deathFlavor):
         self.health = health
         self.attackBonus = attackBonus
         self.armorClass = armorClass
         self.xpReward = xpReward
         self.loot = loot
         self.weapon = weapon
-
+        self.attackFlavor = attackFlavor
+        self.deathFlavor = deathFlavor
+        self.type = type
     def attackDamage(self):
         return self.weapon.getDamage()
 
-    def attack(self,target):
-        attackType = random.randint(0,)
+    def attack(self,target,enemyFlavorIndex):
+        if self.type == "Enemy":
+            attackType = random.randint(0,2)
+        elif self.type == "Player":
+            attackType = random.randint(0,4)
+        print(self.attackFlavor[attackType][0])
+        if random.randint(1, 20) + self.attackBonus >= target.armorClass:
+            print(char.attackFlavor[attackType][1])
+            target.health -= char.attackDamage()
+            if target.health <= 0:
+                if target.name == "Vol'qaroth the Fallen":
+                    isEnemyDead = True
+                    ISGAMEOVER = True
+                    oldTreasure = char.treasure
+                    char.treasure += target.loot
+                    print("As his phylactery shatters and his form begins to "
+                          "unravel, Vol'qaroth’s voice fades into a raspy "
+                          "whisper:\n'You delay the inevitable. I am the echo "
+                          "that eternity does not forget...'")
+                    print("Treasure: {0} -> {1}".format(oldTreasure,
+                                                        char.treasure))
+                    print("\n\n\n")
+                    print("--------------------")
+                    print("You win!")
+                    print("Treasure: {0}".format(char.treasure))
+                    print("--------------------")
+                else:
+                    print(target.deathFlavor[enemyFlavorIndex])
+                isEnemyDead = True
+                addXP(target.xpReward)
+                oldTreasure = char.treasure
+                char.treasure += target.loot
+                print("Treasure: {0} -> {1}".format(oldTreasure,
+                                                    char.treasure))
+
+        else:
+            print(char.attackFlavor[attackType][2])
+        # FIX THIS ALL
+
 
 
 
@@ -114,23 +153,12 @@ class PlayerCharacter(Character):
         @param name: str. The name of the player character.
         @param weapon: Weapon. The starting weapon assigned to the character.
         """
-        super().__init__(health=20, attackBonus=5, armorClass=14, loot=0,
-                         weapon=weapon, xpReward=0)
-        self.name = name
-        self.maxHealth = 20
-        self.weaponName = "Shortsword"
-        self.armorName = "Leather Breastplate"
-        self.curPos = [0, 1] # Current position on the map
-        self.lastPos = [0, 0] # Previous position on the map
-        self.treasure = 0
-        self.xp = 0
-        self.moveOptions = [False, False, False, False] # North, East, South, West
-        self.level = 1
-        self.attackFlavor = [  # List of attack narration strings grouped by type
+
+        playerAttackFlavor = [  # List of attack narration strings grouped by type
             # ["description", "hit effect", "miss effect"]
             ["You swing your blade in a clean arc, the steel "
              "singing through the air.", "The edge bites true, "
-             "cutting a sharp line through flesh and armor.",
+                                         "cutting a sharp line through flesh and armor.",
              "The blade slices only air as your target slips just "
              "out of reach."]
             ,
@@ -145,7 +173,7 @@ class PlayerCharacter(Character):
 
             ["You twist into a tight slash, the edge of your weapon"
              " flashing in the dim light.", "The strike lands "
-             "cleanly, drawing a spray of blood across the stone.",
+                                            "cleanly, drawing a spray of blood across the stone.",
              "You overextend, and the blade carves a scar into the "
              "ground instead."]
             ,
@@ -160,10 +188,24 @@ class PlayerCharacter(Character):
 
             ["You feint left, then step in and drive your blade "
              "toward your foe’s guard.", "The trick works. The blade"
-             " slips past their defense and strikes deep.",
+                                         " slips past their defense and strikes deep.",
              "They don’t fall for it, parrying your thrust with "
              "ease."]
         ]
+
+        super().__init__(type = "Player", health=20, attackBonus=5, armorClass=14,
+                         loot=0, weapon=weapon, xpReward=0, attackFlavor =
+                         playerAttackFlavor, deathFlavor= "" )
+        self.name = name
+        self.maxHealth = 20
+        self.weaponName = "Shortsword"
+        self.armorName = "Leather Breastplate"
+        self.curPos = [0, 1] # Current position on the map
+        self.lastPos = [0, 0] # Previous position on the map
+        self.treasure = 0
+        self.xp = 0
+        self.moveOptions = [False, False, False, False] # North, East, South, West
+        self.level = 1
 
 
 
@@ -180,7 +222,7 @@ class RegularEnemy(Character):
         randName = random.choice(["Goblin", "Orc", "Giant Rat", "Zombie", "Mummy",
                                   "Skeleton"])
         self.name = randName
-        self.deathFlavor = ["The goblin lets out a final snarl before crumpling to "
+        enemyDeathFlavor = ["The goblin lets out a final snarl before crumpling to "
                             "the floor, its dagger clattering beside it.",
                             "With a groan like splitting stone, the orc stumbles "
                             "back, then crashes to the ground in a heap of muscle "
@@ -196,7 +238,7 @@ class RegularEnemy(Character):
                             "The skeleton shudders, then its joints give way, "
                             "bones scattering across the stone floor like dry "
                             "leaves in wind."] # Describes enemy death (one per type)
-        self.attackFlavor = [# Nested list for attack descriptions per enemy type
+        enemyAttackFlavor = [# Nested list for attack descriptions per enemy type
                              # Format: [ [attack, hit, miss], [attack, hit, miss],
                              # ... ]
                             [
@@ -301,11 +343,11 @@ class RegularEnemy(Character):
         # 0 - Goblin, 1 - Orc, 2 - Giant Rat, 3 - Zombie, 4 - Mummy, 5 - Skeleton
         # 0 - Attack, 1 - Hit, 2 - Miss
 
-        super().__init__(health=10, attackBonus=4,
+        super().__init__(type = "Enemy", health=10, attackBonus=4,
                         armorClass=12, xpReward=10, loot=random.randint(10,20),
-                        weapon=weapon)
+                        weapon=weapon,attackFlavor=enemyAttackFlavor,
+                         deathFlavor=enemyDeathFlavor)
 
-    # PUT FLAVORS IN PARAMETERS
 
 class MiniBoss(Character):
     """
@@ -318,7 +360,7 @@ class MiniBoss(Character):
         randName = random.choice(["Goblin Boss", "Giant Spider", "Giant Skeleton",
                                   "Wizard"])
         self.name = randName
-        self.deathFlavor = ["The Goblin Boss glares with sudden fear, clutching at "
+        enemyDeathFlavor = ["The Goblin Boss glares with sudden fear, clutching at "
                             "a fresh wound before collapsing with a choked growl, "
                             "ambition leaking into the dirt.",
                             "The spider convulses violently, legs curling inward"
@@ -331,7 +373,7 @@ class MiniBoss(Character):
                             "one final time before he collapses, robes pooling "
                             "around a body gone limp and cold."]
                             # Narrative strings that describe mini-boss deaths
-        self.attackFlavor = [   # Flavor text: [ [attack, hit, miss], ... ]
+        enemyAttackFlavor = [   # Flavor text: [ [attack, hit, miss], ... ]
                             [
                                 ["The Goblin Boss bellows and swings a jagged "
                                  "cleaver in a brutal arc.","The cleaver bites "
@@ -414,10 +456,10 @@ class MiniBoss(Character):
         # 0 - Goblin Boss, 1 - Giant Spider, 2 - Giant Skeleton, 3 - Wizard
         # 0 - Attack, 1 - Hit, 2 - Miss
 
-        super().__init__(health=15, attackBonus=5,
+        super().__init__(type = "Enemy", health=15, attackBonus=5,
                         armorClass=14, xpReward=20, loot=random.randint(20, 30),
-                        weapon=weapon
-                        )
+                        weapon=weapon,attackFlavor=enemyAttackFlavor,
+                         deathFlavor=enemyDeathFlavor)
 
 
 
@@ -430,7 +472,7 @@ class Boss(Character):
     """
     def __init__(self, weapon):
         self.name = "Vol'qaroth the Fallen"
-        self.attackFlavor = [[# Narrative attack descriptions for the boss: [ [
+        enemyAttackFlavor = [[# Narrative attack descriptions for the boss: [ [
                               # attack, hit, miss], ... ]
                                 ["Vol'qaroth raises his skeletal hand, "
                                  "and a torrent of shadow lances toward your heart.",
@@ -451,13 +493,15 @@ class Boss(Character):
                                  "You vault through a gap in the flames, singed"
                                  " but untouched."]
                             ]]
-
+        enemyDeathFlavor = ["The evil lich Vol'qaroth the Fallen claims another "
+                            "victim!"]
         # [Enemy][Attack][Hit/Miss]
         # 0 - Vol'qaroth
         # 0 - Attack, 1 - Hit, 2 - Miss
-        super().__init__(health=25, attackBonus=7,
+        super().__init__(type = "Enemy", health=25, attackBonus=7,
                          armorClass=18, loot=random.randint(50, 60),
-                         weapon=weapon, xpReward=0
+                         weapon=weapon, xpReward=0, attackFlavor=enemyAttackFlavor,
+                         deathFlavor=enemyDeathFlavor
                          )
 
 
@@ -790,6 +834,7 @@ def combat():
         print("Attack")
         print("Run")
         print("Stats")
+        print("Quit")
         combatAction = input("Please select a command:").lower()
 
         if combatAction == "attack":
@@ -865,6 +910,7 @@ def combat():
             print("Health: {0}/{1}".format(char.health, char.maxHealth))
             print("Weapon: {0}".format(char.weaponName))
             print("Armor: {0}".format(char.armorName))
+            continue
         elif combatAction == "quit":
             ISGAMEOVER = True
             break
