@@ -804,6 +804,7 @@ def combat():
         print("Attack")
         print("Run")
         print("Stats")
+        print("Quit")
         combatAction = input("Please select a command:").lower()
 
         if combatAction == "attack":
@@ -879,6 +880,7 @@ def combat():
             print("Health: {0}/{1}".format(char.health, char.maxHealth))
             print("Weapon: {0}".format(char.weaponName))
             print("Armor: {0}".format(char.armorName))
+            continue
         elif combatAction == "quit":
             ISGAMEOVER = True
             break
