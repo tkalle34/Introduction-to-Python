@@ -12,6 +12,7 @@ text are all included.
 
 
 import random
+from pickle import GLOBAL
 
 # Global flag to track game state
 ISGAMEOVER = False
@@ -90,7 +91,7 @@ MAPBASE = [
 
 class Character:
     def __init__(self, type, health, attackBonus, armorClass,
-                 xpReward, loot, weapon, attackFlavor, deathFlavor):
+                 xpReward, loot, weapon, attackFlavor, deathFlavor, treasure, name):
         self.health = health
         self.attackBonus = attackBonus
         self.armorClass = armorClass
@@ -100,47 +101,44 @@ class Character:
         self.attackFlavor = attackFlavor
         self.deathFlavor = deathFlavor
         self.type = type
+        self.treasure = treasure
+        self.name = name
     def attackDamage(self):
         return self.weapon.getDamage()
 
-    def attack(self,target,enemyFlavorIndex):
+    def attack(self, target: object, enemyFlavorIndex):
+        global ISGAMEOVER
         if self.type == "Enemy":
             attackType = random.randint(0,2)
         elif self.type == "Player":
             attackType = random.randint(0,4)
         print(self.attackFlavor[attackType][0])
         if random.randint(1, 20) + self.attackBonus >= target.armorClass:
-            print(char.attackFlavor[attackType][1])
-            target.health -= char.attackDamage()
+            print(self.attackFlavor[attackType][1])
+            target.health -= self.attackDamage()
             if target.health <= 0:
-                if target.name == "Vol'qaroth the Fallen":
-                    isEnemyDead = True
-                    ISGAMEOVER = True
-                    oldTreasure = char.treasure
-                    char.treasure += target.loot
-                    print("As his phylactery shatters and his form begins to "
-                          "unravel, Vol'qaroth’s voice fades into a raspy "
-                          "whisper:\n'You delay the inevitable. I am the echo "
-                          "that eternity does not forget...'")
-                    print("Treasure: {0} -> {1}".format(oldTreasure,
-                                                        char.treasure))
-                    print("\n\n\n")
-                    print("--------------------")
-                    print("You win!")
-                    print("Treasure: {0}".format(char.treasure))
-                    print("--------------------")
-                else:
+                if self.type != "Player":
                     print(target.deathFlavor[enemyFlavorIndex])
-                isEnemyDead = True
-                addXP(target.xpReward)
-                oldTreasure = char.treasure
-                char.treasure += target.loot
-                print("Treasure: {0} -> {1}".format(oldTreasure,
-                                                    char.treasure))
-
+                    isEnemyDead = True
+                    addXP(target.xpReward)
+                    oldTreasure = self.treasure
+                    self.treasure += target.loot
+                    print("Treasure: {0} -> {1}".format(oldTreasure,
+                                                        self.treasure))
+                else:
+                    if self.name != "Vol'qaroth the Fallen":
+                        print("Despite their prowess, {0} falls in "
+                              "battle to a {1}".format(target.name, self.name))
+                    else:
+                        print("The evil lich Vol'qaroth the Fallen claims another "
+                              "victim!")
+                    print("--------------------")
+                    print("You lose!")
+                    print("--------------------")
+                    ISGAMEOVER = True
+                    quit()
         else:
-            print(char.attackFlavor[attackType][2])
-        # FIX THIS ALL
+            print(self.attackFlavor[attackType][2])
 
 
 
@@ -192,17 +190,17 @@ class PlayerCharacter(Character):
              "They don’t fall for it, parrying your thrust with "
              "ease."]
         ]
-
+        playerName = name
         super().__init__(type = "Player", health=20, attackBonus=5, armorClass=14,
                          loot=0, weapon=weapon, xpReward=0, attackFlavor =
-                         playerAttackFlavor, deathFlavor= "" )
+                         playerAttackFlavor, deathFlavor= "",treasure=0,
+                         name=playerName)
         self.name = name
         self.maxHealth = 20
         self.weaponName = "Shortsword"
         self.armorName = "Leather Breastplate"
         self.curPos = [0, 1] # Current position on the map
         self.lastPos = [0, 0] # Previous position on the map
-        self.treasure = 0
         self.xp = 0
         self.moveOptions = [False, False, False, False] # North, East, South, West
         self.level = 1
@@ -221,7 +219,7 @@ class RegularEnemy(Character):
     def __init__(self,weapon):
         randName = random.choice(["Goblin", "Orc", "Giant Rat", "Zombie", "Mummy",
                                   "Skeleton"])
-        self.name = randName
+
         enemyDeathFlavor = ["The goblin lets out a final snarl before crumpling to "
                             "the floor, its dagger clattering beside it.",
                             "With a groan like splitting stone, the orc stumbles "
@@ -346,7 +344,7 @@ class RegularEnemy(Character):
         super().__init__(type = "Enemy", health=10, attackBonus=4,
                         armorClass=12, xpReward=10, loot=random.randint(10,20),
                         weapon=weapon,attackFlavor=enemyAttackFlavor,
-                         deathFlavor=enemyDeathFlavor)
+                         deathFlavor=enemyDeathFlavor,treasure=0, name = randName)
 
 
 class MiniBoss(Character):
@@ -359,7 +357,7 @@ class MiniBoss(Character):
     def __init__(self, weapon):
         randName = random.choice(["Goblin Boss", "Giant Spider", "Giant Skeleton",
                                   "Wizard"])
-        self.name = randName
+
         enemyDeathFlavor = ["The Goblin Boss glares with sudden fear, clutching at "
                             "a fresh wound before collapsing with a choked growl, "
                             "ambition leaking into the dirt.",
@@ -459,7 +457,7 @@ class MiniBoss(Character):
         super().__init__(type = "Enemy", health=15, attackBonus=5,
                         armorClass=14, xpReward=20, loot=random.randint(20, 30),
                         weapon=weapon,attackFlavor=enemyAttackFlavor,
-                         deathFlavor=enemyDeathFlavor)
+                         deathFlavor=enemyDeathFlavor, treasure=0, name = randName)
 
 
 
@@ -471,7 +469,7 @@ class Boss(Character):
     The boss has special combat dialogue and ending sequences.
     """
     def __init__(self, weapon):
-        self.name = "Vol'qaroth the Fallen"
+
         enemyAttackFlavor = [[# Narrative attack descriptions for the boss: [ [
                               # attack, hit, miss], ... ]
                                 ["Vol'qaroth raises his skeletal hand, "
@@ -493,15 +491,16 @@ class Boss(Character):
                                  "You vault through a gap in the flames, singed"
                                  " but untouched."]
                             ]]
-        enemyDeathFlavor = ["The evil lich Vol'qaroth the Fallen claims another "
-                            "victim!"]
+        enemyDeathFlavor = [["The evil lich Vol'qaroth the Fallen claims another "
+                            "victim!"]]
         # [Enemy][Attack][Hit/Miss]
         # 0 - Vol'qaroth
         # 0 - Attack, 1 - Hit, 2 - Miss
         super().__init__(type = "Enemy", health=25, attackBonus=7,
                          armorClass=18, loot=random.randint(50, 60),
                          weapon=weapon, xpReward=0, attackFlavor=enemyAttackFlavor,
-                         deathFlavor=enemyDeathFlavor
+                         deathFlavor=enemyDeathFlavor, treasure=0, name =
+                         "Vol'qaroth the Fallen"
                          )
 
 
@@ -561,15 +560,17 @@ def mainProgram():
 
         if MAPBASE[char.curPos[0]][char.curPos[1]] == "c":
             print("Rest")
-
+        print("Load Save")
+        print("Save")
         print("Quit")
-        unsplitAction = input("Please select a command:").lower().split()
+        unsplitAction = input("Please select a command:").lower().strip().split()
 
         if len(unsplitAction) == 1:
             userAction = unsplitAction[0]
         elif len(unsplitAction) == 2:
             userAction = unsplitAction[0]
-            moveDirection = unsplitAction[1]
+            if unsplitAction == "move":
+                moveDirection = unsplitAction[1]
         else:
             print("Invalid command, please try again.")
             continue
@@ -577,7 +578,7 @@ def mainProgram():
         # Do Actions
         if userAction == "move" and len(unsplitAction) == 2:
             move(moveDirection)
-        elif userAction == "rest":
+        elif userAction == "rest" and MAPBASE[char.curPos[0]][char.curPos[1]] == "c":
             rest()
         elif userAction == "stats":
             print("Stats:")
@@ -586,6 +587,10 @@ def mainProgram():
             print("Health: {0}/{1}".format(char.health, char.maxHealth))
             print("Weapon: {0}".format(char.weaponName))
             print("Armor: {0}".format(char.armorName))
+        elif userAction == "load":
+            pass
+        elif userAction == "save":
+            pass
         elif userAction == "quit":
             break
         else:
@@ -832,75 +837,25 @@ def combat():
         # Player Turn
         print("Possible commands:")
         print("Attack")
+        print("Block")
         print("Run")
         print("Stats")
         print("Quit")
-        combatAction = input("Please select a command:").lower()
+        combatAction = input("Please select a command:").lower().strip()
 
         if combatAction == "attack":
-            charAttackType = random.randint(0,4)
-            print(char.attackFlavor[charAttackType][0])
-            if random.randint(1,20) + char.attackBonus >= enemy.armorClass:
-                print(char.attackFlavor[charAttackType][1])
-                enemy.health -= char.attackDamage()
-                if enemy.health <= 0:
-                    if enemy.name == "Vol'qaroth the Fallen":
-                        isEnemyDead = True
-                        ISGAMEOVER = True
-                        oldTreasure = char.treasure
-                        char.treasure += enemy.loot
-                        print("As his phylactery shatters and his form begins to "
-                              "unravel, Vol'qaroth’s voice fades into a raspy "
-                              "whisper:\n'You delay the inevitable. I am the echo "
-                              "that eternity does not forget...'")
-                        print("Treasure: {0} -> {1}".format(oldTreasure,
-                                                            char.treasure))
-                        print("\n\n\n")
-                        print("--------------------")
-                        print("You win!")
-                        print("Treasure: {0}".format(char.treasure))
-                        print("--------------------")
-                        continue
-                    else:
-                        print(enemy.deathFlavor[enemyFlavorIndex])
-                    isEnemyDead = True
-                    addXP(enemy.xpReward)
-                    oldTreasure = char.treasure
-                    char.treasure += enemy.loot
-                    print("Treasure: {0} -> {1}".format(oldTreasure,
-                                                        char.treasure))
-                    continue
-            else:
-                print(char.attackFlavor[charAttackType][2])
+            char.attack(enemy,enemyFlavorIndex)
+        elif combatAction == "block":
+            print("You raise your shield above your head, ready to block the next "
+                  "strike")
+            char.armorClass += 3
         elif combatAction == "run":
             # Move back to last position
             char.curPos[0] = char.lastPos[0]
             char.curPos[1] = char.lastPos[1]
             print("One last strike comes at you.")
             # Enemy gets one attack on the way out
-            enemyAttackType = random.randint(0, 2)
-            print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
-            if random.randint(1, 20) + enemy.attackBonus >= char.armorClass:
-                oldHealth = char.health
-                char.health -= enemy.attackDamage()
-                print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][1])
-                print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,
-                                                          char.maxHealth,
-                                                          char.health))
-                if char.health <= 0:
-                    if enemy.name != "Vol'qaroth the Fallen":
-                        print("Despite their prowess, {0} falls in "
-                              "battle to a {1}".format(char.name, enemy.name))
-                    else:
-                        print("The evil lich Vol'qaroth the Fallen claims another "
-                              "victim!")
-                    print("--------------------")
-                    print("You lose!")
-                    print("--------------------")
-                    ISGAMEOVER = True
-                    break
-            else:
-                print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
+            enemy.attack(char,enemyFlavorIndex)
             print("You manage to get away!")
             break
         elif combatAction == "stats":
@@ -919,30 +874,10 @@ def combat():
             continue
 
         # Enemy Turn
-        enemyAttackType = random.randint(0,2)
-        print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][0])
+        enemy.attack(char,enemyFlavorIndex)
 
-        if random.randint(1,20) + enemy.attackBonus >= char.armorClass:
-            oldHealth = char.health
-            char.health -= enemy.attackDamage()
-            print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][1])
-            print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,
-                                                      char.maxHealth,char.health))
-            if char.health <= 0:
-                if enemy.name != "Vol'qaroth the Fallen":
-                    print("Despite their prowess, {0} falls in "
-                          "battle to a {1}".format(char.name,enemy.name))
-                else:
-                    print("The evil lich Vol'qaroth the Fallen claims another "
-                          "victim!")
-                print("--------------------")
-                print("You lose!")
-                print("--------------------")
-                ISGAMEOVER = True
-                break
-        else:
-            print(enemy.attackFlavor[enemyFlavorIndex][enemyAttackType][2])
-
+        if combatAction == "block":
+            char.armorClass -= 3
 
 def rest():
     """
