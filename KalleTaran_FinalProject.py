@@ -12,8 +12,7 @@ text are all included.
 
 
 import random
-from pickle import GLOBAL
-
+import pickle
 # Global flag to track game state
 ISGAMEOVER = False
 
@@ -119,7 +118,6 @@ class Character:
             if target.health <= 0:
                 if self.type != "Player":
                     print(target.deathFlavor[enemyFlavorIndex])
-                    isEnemyDead = True
                     addXP(target.xpReward)
                     oldTreasure = self.treasure
                     self.treasure += target.loot
@@ -587,10 +585,37 @@ def mainProgram():
             print("Health: {0}/{1}".format(char.health, char.maxHealth))
             print("Weapon: {0}".format(char.weaponName))
             print("Armor: {0}".format(char.armorName))
+            continue
         elif userAction == "load":
             pass
         elif userAction == "save":
-            pass
+
+            while True:
+                saveFile = input("Please select a save file:\nSlot 1\nSlot 2\nSlot "
+                             "3").lower()
+                gameState = {
+                    "player" : char,
+                    "enemy" : ""
+                }
+
+                if saveFile == "slot 1" or saveFile == "1":
+                    with open("save1.pkl","wb") as f:
+                        pickle.dump(gameState,f)
+                        print()
+                elif saveFile == "slot 2" or saveFile == "2":
+                    with open("save2.pkl","wb") as f:
+                        pickle.dump(gameState,f)
+                elif saveFile == "slot 3" or saveFile == "3":
+                    with open("save3.pkl","wb") as f:
+                        pickle.dump(gameState,f)
+                else:
+                    print("Invalid save file, please try again.")
+                    continue
+                break
+            continue
+
+
+
         elif userAction == "quit":
             break
         else:
@@ -959,6 +984,7 @@ def possibleMoves():
         west = False
 
     char.moveOptions = [north, east, south, west]
+
 
 
 # ========== Game Start ==========
