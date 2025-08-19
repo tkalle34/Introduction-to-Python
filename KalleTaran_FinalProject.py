@@ -587,35 +587,11 @@ def mainProgram():
             print("Armor: {0}".format(char.armorName))
             continue
         elif userAction == "load":
-            pass
-        elif userAction == "save":
-
-            while True:
-                saveFile = input("Please select a save file:\nSlot 1\nSlot 2\nSlot "
-                             "3").lower()
-                gameState = {
-                    "player" : char,
-                    "enemy" : ""
-                }
-
-                if saveFile == "slot 1" or saveFile == "1":
-                    with open("save1.pkl","wb") as f:
-                        pickle.dump(gameState,f)
-                        print()
-                elif saveFile == "slot 2" or saveFile == "2":
-                    with open("save2.pkl","wb") as f:
-                        pickle.dump(gameState,f)
-                elif saveFile == "slot 3" or saveFile == "3":
-                    with open("save3.pkl","wb") as f:
-                        pickle.dump(gameState,f)
-                else:
-                    print("Invalid save file, please try again.")
-                    continue
-                break
+            load()
             continue
-
-
-
+        elif userAction == "save":
+            save(char)
+            continue
         elif userAction == "quit":
             break
         else:
@@ -792,7 +768,8 @@ def combat():
     XP are awarded on victory.
     """
     enemyFlavorIndex = 0
-
+    global ISINCOMBAT
+    ISINCOMBAT = True
     # Determine enemy type based on map tile
     if MAPBASE[char.curPos[0]][char.curPos[1]] == "e":
         enemy = RegularEnemy(basicEnemyWeapon)
@@ -984,6 +961,53 @@ def possibleMoves():
         west = False
 
     char.moveOptions = [north, east, south, west]
+
+def save(player, enemy=None):
+    while True:
+        saveFile = input("Please select a save file:\nSlot 1\nSlot 2\nSlot "
+                         "3").lower()
+        gameState = {
+            "player": player,
+        }
+        if enemy is not None:
+            gameState["enemy"] = enemy
+
+        if saveFile == "slot 1" or saveFile == "1":
+            with open("save1.pkl", "wb") as f:
+                pickle.dump(gameState, f)
+                print()
+        elif saveFile == "slot 2" or saveFile == "2":
+            with open("save2.pkl", "wb") as f:
+                pickle.dump(gameState, f)
+        elif saveFile == "slot 3" or saveFile == "3":
+            with open("save3.pkl", "wb") as f:
+                pickle.dump(gameState, f)
+        else:
+            print("Invalid save file, please try again.")
+            continue
+        break
+
+def load(isInCombat):
+    while True:
+        loadFile = input("Please select a save file to load:"
+                         "\nSlot 1\n Slot 2\n Slot 3").lower()
+        if loadFile == "slot 1" or loadFile == "1":
+            with open("save1.pkl", "rb") as f:
+                pickle.dump(gameState, f)
+                print()
+        elif loadFile == "slot 2" or loadFile == "2":
+            with open("save2.pkl", "rb") as f:
+                pickle.dump(gameState, f)
+        elif loadFile == "slot 3" or loadFile == "3":
+            with open("save3.pkl", "rb") as f:
+                gameState = pickle.load(f)
+                char = PlayerCharacter(gameState["player"].name,gameState[
+                    "player".weapon])
+
+        else:
+            print("Invalid save file, please try again.")
+            continue
+        break
 
 
 
