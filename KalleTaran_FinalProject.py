@@ -11,6 +11,7 @@ text are all included.
 """
 
 
+
 import random
 import pickle
 # Global flag to track game state
@@ -587,7 +588,7 @@ def mainProgram():
             print("Armor: {0}".format(char.armorName))
             continue
         elif userAction == "load":
-            load()
+            char = load()
             continue
         elif userAction == "save":
             save(char)
@@ -842,6 +843,8 @@ def combat():
         print("Block")
         print("Run")
         print("Stats")
+        print("Load Game")
+        print("Save")
         print("Quit")
         combatAction = input("Please select a command:").lower().strip()
 
@@ -867,6 +870,12 @@ def combat():
             print("Health: {0}/{1}".format(char.health, char.maxHealth))
             print("Weapon: {0}".format(char.weaponName))
             print("Armor: {0}".format(char.armorName))
+            continue
+        elif combatAction == "load":
+            char, enemy = load(True)
+            continue
+        elif combatAction == "save":
+            save(char,enemy)
             continue
         elif combatAction == "quit":
             ISGAMEOVER = True
@@ -975,39 +984,60 @@ def save(player, enemy=None):
         if saveFile == "slot 1" or saveFile == "1":
             with open("save1.pkl", "wb") as f:
                 pickle.dump(gameState, f)
-                print()
+                print("Game saved to slot 1.")
+                break
         elif saveFile == "slot 2" or saveFile == "2":
             with open("save2.pkl", "wb") as f:
                 pickle.dump(gameState, f)
+                print("Game saved to slot 1.")
+                break
         elif saveFile == "slot 3" or saveFile == "3":
             with open("save3.pkl", "wb") as f:
                 pickle.dump(gameState, f)
+                print("Game saved to slot 1.")
+                break
         else:
             print("Invalid save file, please try again.")
             continue
-        break
 
-def load(isInCombat):
+def load(enemy=None):
     while True:
         loadFile = input("Please select a save file to load:"
                          "\nSlot 1\n Slot 2\n Slot 3").lower()
         if loadFile == "slot 1" or loadFile == "1":
             with open("save1.pkl", "rb") as f:
-                pickle.dump(gameState, f)
-                print()
+                gameState = pickle.load(f)
+                character = PlayerCharacter(gameState["player"].name, gameState[
+                    "player".weapon])
+                print("Save 1 loaded.")
+                if enemy is not None:
+                    enemyChar = gameState["enemy"]
+                    return character, enemyChar
+                return character
         elif loadFile == "slot 2" or loadFile == "2":
             with open("save2.pkl", "rb") as f:
-                pickle.dump(gameState, f)
+                gameState = pickle.load(f)
+                character = PlayerCharacter(gameState["player"].name, gameState[
+                    "player".weapon])
+                print("Save 2 loaded.")
+                if enemy is not None:
+                    enemyChar = gameState["enemy"]
+                    return character, enemyChar
+                return character
         elif loadFile == "slot 3" or loadFile == "3":
             with open("save3.pkl", "rb") as f:
                 gameState = pickle.load(f)
-                char = PlayerCharacter(gameState["player"].name,gameState[
+                character = PlayerCharacter(gameState["player"].name,gameState[
                     "player".weapon])
-
+                print("Save 3 loaded.")
+                if enemy is not None:
+                    enemyChar = gameState["enemy"]
+                    return character, enemyChar
+                return character
         else:
             print("Invalid save file, please try again.")
             continue
-        break
+
 
 
 
