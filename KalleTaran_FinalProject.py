@@ -16,7 +16,7 @@ import random
 import pickle
 # Global flag to track game state
 ISGAMEOVER = False
-
+char = object()
 # MAPBASE: a 26x26 grid representing the dungeon map
 MAPBASE = [
           # 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
@@ -106,18 +106,18 @@ class Character:
     def attackDamage(self):
         return self.weapon.getDamage()
 
-    def attack(self, target: object, enemyFlavorIndex):
+    def attack(self, target: object, enemyFlavorIndex=0):
         global ISGAMEOVER
         if self.type == "Enemy":
             attackType = random.randint(0,2)
         elif self.type == "Player":
             attackType = random.randint(0,4)
-        print(self.attackFlavor[attackType][0])
+        print(self.attackFlavor[enemyFlavorIndex][attackType][0])
         if random.randint(1, 20) + self.attackBonus >= target.armorClass:
-            print(self.attackFlavor[attackType][1])
+            print(self.attackFlavor[enemyFlavorIndex][attackType][1])
             target.health -= self.attackDamage()
             if target.health <= 0:
-                if self.type != "Player":
+                if self.type == "Player":
                     print(target.deathFlavor[enemyFlavorIndex])
                     addXP(target.xpReward)
                     oldTreasure = self.treasure
@@ -137,7 +137,7 @@ class Character:
                     ISGAMEOVER = True
                     quit()
         else:
-            print(self.attackFlavor[attackType][2])
+            print(self.attackFlavor[enemyFlavorIndex][attackType][2])
 
 
 
@@ -151,7 +151,7 @@ class PlayerCharacter(Character):
         @param weapon: Weapon. The starting weapon assigned to the character.
         """
 
-        playerAttackFlavor = [  # List of attack narration strings grouped by type
+        playerAttackFlavor = [[  # List of attack narration strings grouped by type
             # ["description", "hit effect", "miss effect"]
             ["You swing your blade in a clean arc, the steel "
              "singing through the air.", "The edge bites true, "
@@ -188,7 +188,7 @@ class PlayerCharacter(Character):
                                          " slips past their defense and strikes deep.",
              "They don’t fall for it, parrying your thrust with "
              "ease."]
-        ]
+        ]]
         playerName = name
         super().__init__(type = "Player", health=20, attackBonus=5, armorClass=14,
                          loot=0, weapon=weapon, xpReward=0, attackFlavor =
@@ -568,7 +568,7 @@ def mainProgram():
             userAction = unsplitAction[0]
         elif len(unsplitAction) == 2:
             userAction = unsplitAction[0]
-            if unsplitAction == "move":
+            if unsplitAction[0] == "move":
                 moveDirection = unsplitAction[1]
         else:
             print("Invalid command, please try again.")
@@ -588,7 +588,7 @@ def mainProgram():
             print("Armor: {0}".format(char.armorName))
             continue
         elif userAction == "load":
-            char = load()
+            load()
             continue
         elif userAction == "save":
             save(char)
@@ -769,8 +769,6 @@ def combat():
     XP are awarded on victory.
     """
     enemyFlavorIndex = 0
-    global ISINCOMBAT
-    ISINCOMBAT = True
     # Determine enemy type based on map tile
     if MAPBASE[char.curPos[0]][char.curPos[1]] == "e":
         enemy = RegularEnemy(basicEnemyWeapon)
@@ -872,7 +870,7 @@ def combat():
             print("Armor: {0}".format(char.armorName))
             continue
         elif combatAction == "load":
-            char, enemy = load(True)
+            load(True)
             continue
         elif combatAction == "save":
             save(char,enemy)
@@ -989,12 +987,12 @@ def save(player, enemy=None):
         elif saveFile == "slot 2" or saveFile == "2":
             with open("save2.pkl", "wb") as f:
                 pickle.dump(gameState, f)
-                print("Game saved to slot 1.")
+                print("Game saved to slot 2.")
                 break
         elif saveFile == "slot 3" or saveFile == "3":
             with open("save3.pkl", "wb") as f:
                 pickle.dump(gameState, f)
-                print("Game saved to slot 1.")
+                print("Game saved to slot 3.")
                 break
         else:
             print("Invalid save file, please try again.")
@@ -1003,42 +1001,45 @@ def save(player, enemy=None):
 def load(enemy=None):
     while True:
         loadFile = input("Please select a save file to load:"
-                         "\nSlot 1\n Slot 2\n Slot 3").lower()
+                         "\nSlot 1\nSlot 2\nSlot 3\nQuit").lower()
         if loadFile == "slot 1" or loadFile == "1":
             with open("save1.pkl", "rb") as f:
                 gameState = pickle.load(f)
-                character = PlayerCharacter(gameState["player"].name, gameState[
-                    "player".weapon])
-                print("Save 1 loaded.")
+                character = gameState["player"]
+                for key, value in character.__dict__.items():
+                    setattr(char, key, value)
                 if enemy is not None:
                     enemyChar = gameState["enemy"]
-                    return character, enemyChar
-                return character
+                    for key, value in enemyChar.__dict__.items():
+                        setattr(enemy, key, value)
+                print("Save 1 loaded.")
         elif loadFile == "slot 2" or loadFile == "2":
             with open("save2.pkl", "rb") as f:
                 gameState = pickle.load(f)
-                character = PlayerCharacter(gameState["player"].name, gameState[
-                    "player".weapon])
-                print("Save 2 loaded.")
+                character = gameState["player"]
+                for key, value in character.__dict__.items():
+                    setattr(char, key, value)
                 if enemy is not None:
                     enemyChar = gameState["enemy"]
-                    return character, enemyChar
-                return character
+                    for key, value in enemyChar.__dict__.items():
+                        setattr(enemy, key, value)
+                print("Save 2 loaded.")
         elif loadFile == "slot 3" or loadFile == "3":
             with open("save3.pkl", "rb") as f:
                 gameState = pickle.load(f)
-                character = PlayerCharacter(gameState["player"].name,gameState[
-                    "player".weapon])
-                print("Save 3 loaded.")
+                character = gameState["player"]
+                for key, value in character.__dict__.items():
+                    setattr(char, key, value)
                 if enemy is not None:
                     enemyChar = gameState["enemy"]
-                    return character, enemyChar
-                return character
+                    for key, value in enemyChar.__dict__.items():
+                        setattr(enemy, key, value)
+                print("Save 3 loaded.")
+        elif loadFile == "cancel":
+            break
         else:
             print("Invalid save file, please try again.")
             continue
-
-
 
 
 # ========== Game Start ==========
@@ -1058,3 +1059,4 @@ if __name__ == "__main__":
     char = PlayerCharacter(input("Please enter a name for your character:"),
                            shortsword)
     mainProgram()
+
