@@ -18,6 +18,7 @@ import pickle
 # Global flag to track game state
 ISGAMEOVER = False
 ISENEMYDEAD = False
+ENEMYFLAVORINDEX = 0
 char = object()
 # MAPBASE: a 26x26 grid representing the dungeon map
 MAPBASE = [
@@ -112,15 +113,23 @@ class Character:
     def attack(self, target: object, enemyFlavorIndex=0):
         global ISGAMEOVER
         global ISENEMYDEAD
-        if self.type == "Enemy":
-            attackType = random.randint(0,2)
-        elif self.type == "Player":
+
+
+        if self.type == "Player":
             attackType = random.randint(0,4)
-        print(enemyFlavorIndex)
+        else:
+            attackType = random.randint(0, 2)
+
         print(self.attackFlavor[enemyFlavorIndex][attackType][0])
         if random.randint(1, 20) + self.attackBonus >= target.armorClass:
             print(self.attackFlavor[enemyFlavorIndex][attackType][1])
+            if target.type == "Player":
+                oldHealth = target.health
             target.health -= self.attackDamage()
+            if target.type == "Player":
+                print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,
+                                                          target.maxHealth,
+                                                          target.health))
             if target.health <= 0:
                 if self.type == "Player":
                     print(target.deathFlavor[enemyFlavorIndex])
@@ -346,7 +355,7 @@ class RegularEnemy(Character):
         # 0 - Goblin, 1 - Orc, 2 - Giant Rat, 3 - Zombie, 4 - Mummy, 5 - Skeleton
         # 0 - Attack, 1 - Hit, 2 - Miss
 
-        super().__init__(type = "Enemy", health=10, attackBonus=4,
+        super().__init__(type = "Regular Enemy", health=10, attackBonus=4,
                         armorClass=12, xpReward=10, loot=random.randint(10,20),
                         weapon=weapon,attackFlavor=enemyAttackFlavor,
                          deathFlavor=enemyDeathFlavor,treasure=0, name = randName)
@@ -459,7 +468,7 @@ class MiniBoss(Character):
         # 0 - Goblin Boss, 1 - Giant Spider, 2 - Giant Skeleton, 3 - Wizard
         # 0 - Attack, 1 - Hit, 2 - Miss
 
-        super().__init__(type = "Enemy", health=15, attackBonus=5,
+        super().__init__(type = "Mini Boss", health=15, attackBonus=5,
                         armorClass=14, xpReward=20, loot=random.randint(20, 30),
                         weapon=weapon,attackFlavor=enemyAttackFlavor,
                          deathFlavor=enemyDeathFlavor, treasure=0, name = randName)
@@ -501,7 +510,7 @@ class Boss(Character):
         # [Enemy][Attack][Hit/Miss]
         # 0 - Vol'qaroth
         # 0 - Attack, 1 - Hit, 2 - Miss
-        super().__init__(type = "Enemy", health=25, attackBonus=7,
+        super().__init__(type = "Boss", health=25, attackBonus=7,
                          armorClass=18, loot=random.randint(50, 60),
                          weapon=weapon, xpReward=0, attackFlavor=enemyAttackFlavor,
                          deathFlavor=enemyDeathFlavor, treasure=0, name =
@@ -565,6 +574,7 @@ def mainProgram():
 
         if MAPBASE[char.curPos[0]][char.curPos[1]] == "c":
             print("Rest")
+        print("Stats")
         print("Load Save")
         print("Save")
         print("Quit")
@@ -774,7 +784,12 @@ def combat():
     until the enemy or player is defeated, or the player runs away. Loot and
     XP are awarded on victory.
     """
-    enemyFlavorIndex = 0
+    global ISGAMEOVER
+    global ISENEMYDEAD
+    global ENEMYFLAVORINDEX
+    ISENEMYDEAD = False
+    
+
     # Determine enemy type based on map tile
     if MAPBASE[char.curPos[0]][char.curPos[1]] == "e":
         enemy = RegularEnemy(basicEnemyWeapon)
@@ -782,50 +797,50 @@ def combat():
         if enemy.name == "Goblin":
             print("With a shriek and a flash of rusted steel, a goblin lunges from "
                   "the shadows, eyes gleaming with cruel mischief.")
-            enemyFlavorIndex = 0
+            ENEMYFLAVORINDEX = 0
         elif enemy.name == "Orc":
             print("The ground trembles slightly as an orc rounds the corner, "
                   "muscles taut and tusked jaw clenched in anticipation of blood.")
-            enemyFlavorIndex = 1
+            ENEMYFLAVORINDEX = 1
         elif enemy.name == "Giant Rat":
             print("The stench hits first. Then the wet scurrying. And suddenly a "
                   "rat the size of a dog bursts from a cracked wall.")
-            enemyFlavorIndex = 2
+            ENEMYFLAVORINDEX = 2
         elif enemy.name == "Zombie":
             print("You hear the drag of flesh on stone before you see it—then a "
                   "corpse shambles into view, stitched together by stubborn hatred.")
-            enemyFlavorIndex = 3
+            ENEMYFLAVORINDEX = 3
         elif enemy.name == "Mummy":
             print("Bandages flutter like dry leaves as the mummy emerges, "
                   "its ancient eyes smoldering with forgotten curses.")
-            enemyFlavorIndex = 4
+            ENEMYFLAVORINDEX = 4
         elif enemy.name == "Skeleton":
             print("With a hollow rattle, a skeleton assembles itself from a heap of "
                   "bones, drawing a corroded blade with lifeless precision.")
-            enemyFlavorIndex = 5
+            ENEMYFLAVORINDEX = 5
     elif MAPBASE[char.curPos[0]][char.curPos[1]] == "m":
         enemy = MiniBoss(mediumEnemyWeapon)
         if enemy.name == "Goblin Boss":
             print("From the shadows steps a hulking goblin clad in mismatched "
                   "armor, eyes gleaming with malice as he thumps a notched cleaver "
                   "against his shield.")
-            enemyFlavorIndex = 0
+            ENEMYFLAVORINDEX = 0
         elif enemy.name == "Giant Spider":
             print("The webbed ceiling shudders, then tears, spilling down a "
                   "massive, chittering spider, its eyes glistening like obsidian "
                   "beads as venom drips from its fangs.")
-            enemyFlavorIndex =  1
+            ENEMYFLAVORINDEX =  1
         elif enemy.name == "Giant Skeleton":
             print("The chamber trembles as bones rise from the earth, assembling "
                   "with unnatural speed into a towering warrior of death. Its jaw "
                   "unhinges in a soundless roar as it lifts a blade larger than a "
                   "man.")
-            enemyFlavorIndex = 2
+            ENEMYFLAVORINDEX = 2
         elif enemy.name == "Wizard":
             print("A gust of arcane wind howls through the hall as a robed figure "
                   "floats into view, eyes aglow with bitter wisdom and wrath. His "
                   "fingers trace runes in the air that burn with power.")
-            enemyFlavorIndex = 3
+            ENEMYFLAVORINDEX = 3
     elif MAPBASE[char.curPos[0]][char.curPos[1]] == "x":
         enemy = Boss(maxEnemyWeapon)
         print("The air grows deathly still as the chamber darkens, torches "
@@ -834,10 +849,7 @@ def combat():
               "of sickly green flame.\n'I was king when your gods were dust,"
               "' Vol'qaroth intones, his voice echoing from everywhere and "
               "nowhere.\n'Come, let oblivion remember your name… if it must.'")
-        enemyFlavorIndex = 0
-
-    global ISGAMEOVER
-    global ISENEMYDEAD
+        ENEMYFLAVORINDEX = 0
 
     # Combat loop
     while not ISENEMYDEAD:
@@ -864,7 +876,7 @@ def combat():
             char.curPos[1] = char.lastPos[1]
             print("One last strike comes at you.")
             # Enemy gets one attack on the way out
-            enemy.attack(char,enemyFlavorIndex)
+            enemy.attack(char,ENEMYFLAVORINDEX)
             print("You manage to get away!")
             break
         elif combatAction == "stats":
@@ -876,7 +888,7 @@ def combat():
             print("Armor: {0}".format(char.armorName))
             continue
         elif combatAction == "load":
-            load(True)
+            load()
             continue
         elif combatAction == "save":
             save(char,enemy)
@@ -891,7 +903,7 @@ def combat():
         if ISENEMYDEAD:
             continue
         # Enemy Turn
-        enemy.attack(char,enemyFlavorIndex)
+        enemy.attack(char,ENEMYFLAVORINDEX)
 
         if combatAction == "block":
             char.armorClass -= 3
@@ -978,14 +990,17 @@ def possibleMoves():
     char.moveOptions = [north, east, south, west]
 
 def save(player, enemy=None):
+    global MAPBASE
     while True:
         saveFile = input("Please select a save file:\nSlot 1\nSlot 2\nSlot "
-                         "3").lower()
+                         "3\nCancel\n").lower()
         gameState = {
             "player": player,
+            "map": MAPBASE
         }
         if enemy is not None:
             gameState["enemy"] = enemy
+            gameState["index"] = ENEMYFLAVORINDEX
 
         if saveFile == "slot 1" or saveFile == "1":
             with open("save1.pkl", "wb") as f:
@@ -1006,48 +1021,105 @@ def save(player, enemy=None):
             print("Invalid save file, please try again.")
             continue
 
-def load(enemy=None):
-    # Add case for save file not existing
+def load():
+    global MAPBASE
+    global ENEMYFLAVORINDEX
+    global char
     while True:
         loadFile = input("Please select a save file to load:"
-                         "\nSlot 1\nSlot 2\nSlot 3\nQuit").lower()
+                         "\nSlot 1\nSlot 2\nSlot 3\nCancel\n").lower()
         if loadFile == "slot 1" or loadFile == "1":
-            with open("save1.pkl", "rb") as f:
-                gameState = pickle.load(f)
-                character = gameState["player"]
-                for key, value in character.__dict__.items():
-                    setattr(char, key, value)
-                if enemy is not None:
-                    enemyChar = gameState["enemy"]
-                    for key, value in enemyChar.__dict__.items():
-                        setattr(enemy, key, value)
-                print("Save 1 loaded.")
+            try:
+                with open("save1.pkl", "rb") as f:
+                    gameState = pickle.load(f)
+                    character = gameState["player"]
+                    ENEMYFLAVORINDEX = gameState["index"]
+                    for key, value in character.__dict__.items():
+                        setattr(char, key, value)
+                    MAPBASE = gameState["map"]
+                    if "enemy" in gameState:
+                        enemyChar = gameState["enemy"]
+                        if isinstance(enemyChar, RegularEnemy):
+                            enemy = RegularEnemy(basicEnemyWeapon)
+                        elif isinstance(enemyChar, MiniBoss):
+                            enemy = MiniBoss(mediumEnemyWeapon)
+                        elif isinstance(enemyChar, Boss):
+                            enemy = Boss(maxEnemyWeapon)
+
+                        for key, value in enemyChar.__dict__.items():
+                            setattr(enemy, key, value)
+                        print("Save 1 loaded.")
+                        combat()
+                        break
+                    print("Save 1 loaded.")
+                    break
+
+
+            except FileNotFoundError:
+                print("No save file found in that slot.")
+                continue
+
         elif loadFile == "slot 2" or loadFile == "2":
-            with open("save2.pkl", "rb") as f:
-                gameState = pickle.load(f)
-                character = gameState["player"]
-                for key, value in character.__dict__.items():
-                    setattr(char, key, value)
-                if enemy is not None:
-                    enemyChar = gameState["enemy"]
-                    for key, value in enemyChar.__dict__.items():
-                        setattr(enemy, key, value)
-                print("Save 2 loaded.")
+            try:
+                with open("save2.pkl", "rb") as f:
+                    gameState = pickle.load(f)
+                    character = gameState["player"]
+                    ENEMYFLAVORINDEX = gameState["index"]
+                    for key, value in character.__dict__.items():
+                        setattr(char, key, value)
+                    MAPBASE = gameState["map"]
+                    if "enemy" in gameState:
+                        enemyChar = gameState["enemy"]
+                        if isinstance(enemyChar, RegularEnemy):
+                            enemy = RegularEnemy(basicEnemyWeapon)
+                        elif isinstance(enemyChar, MiniBoss):
+                            enemy = MiniBoss(mediumEnemyWeapon)
+                        elif isinstance(enemyChar, Boss):
+                            enemy = Boss(maxEnemyWeapon)
+
+                        for key, value in enemyChar.__dict__.items():
+                            setattr(enemy, key, value)
+                        print("Save 2 loaded.")
+                        combat()
+                        break
+                    print("Save 2 loaded.")
+                    break
+            except FileNotFoundError:
+                print("No save file found in that slot.")
+                continue
+
         elif loadFile == "slot 3" or loadFile == "3":
-            with open("save3.pkl", "rb") as f:
-                gameState = pickle.load(f)
-                character = gameState["player"]
-                for key, value in character.__dict__.items():
-                    setattr(char, key, value)
-                if enemy is not None:
-                    enemyChar = gameState["enemy"]
-                    for key, value in enemyChar.__dict__.items():
-                        setattr(enemy, key, value)
-                print("Save 3 loaded.")
+            try:
+                with open("save3.pkl", "rb") as f:
+                    gameState = pickle.load(f)
+                    character = gameState["player"]
+                    ENEMYFLAVORINDEX = gameState["index"]
+                    for key, value in character.__dict__.items():
+                        setattr(char, key, value)
+                    MAPBASE = gameState["map"]
+                    if "enemy" in gameState:
+                        enemyChar = gameState["enemy"]
+                        if isinstance(enemyChar, RegularEnemy):
+                            enemy = RegularEnemy(basicEnemyWeapon)
+                        elif isinstance(enemyChar, MiniBoss):
+                            enemy = MiniBoss(mediumEnemyWeapon)
+                        elif isinstance(enemyChar, Boss):
+                            enemy = Boss(maxEnemyWeapon)
+
+                        for key, value in enemyChar.__dict__.items():
+                            setattr(enemy, key, value)
+                        print("Save 3 loaded.")
+                        combat()
+                        break
+                    print("Save 3 loaded.")
+                    break
+            except FileNotFoundError:
+                print("No save file found in that slot.")
+                continue
         elif loadFile == "cancel":
             break
         else:
-            print("Invalid save file, please try again.")
+            print("Invalid command, please try again.")
             continue
 
 
