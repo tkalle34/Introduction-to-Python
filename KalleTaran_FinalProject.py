@@ -108,6 +108,7 @@ class Character:
     def attackDamage(self):
         return self.weapon.getDamage()
 
+
     def attack(self, target: object, enemyFlavorIndex=0):
         global ISGAMEOVER
         global ISENEMYDEAD
