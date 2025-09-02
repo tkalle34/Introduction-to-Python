@@ -213,7 +213,7 @@ class PlayerCharacter(Character):
         self.maxHealth = 20
         self.weaponName = "Shortsword"
         self.armorName = "Leather Breastplate"
-        self.curPos = [2, 3] # Current position on the map [0, 1]
+        self.curPos = [0, 1] # Current position on the map
         self.lastPos = [0, 0] # Previous position on the map
         self.xp = 0
         self.moveOptions = [False, False, False, False] # North, East, South, West
