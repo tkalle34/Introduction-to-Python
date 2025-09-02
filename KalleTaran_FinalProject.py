@@ -109,6 +109,7 @@ class Character:
     def attackDamage(self):
         return self.weapon.getDamage()
 
+
     def attack(self, target: object, enemyFlavorIndex=0):
         global ISGAMEOVER
         global ISENEMYDEAD
@@ -118,6 +119,7 @@ class Character:
             attackType = random.randint(0,4)
         else:
             attackType = random.randint(0, 2)
+
         print(self.attackFlavor[enemyFlavorIndex][attackType][0])
         if random.randint(1, 20) + self.attackBonus >= target.armorClass:
             print(self.attackFlavor[enemyFlavorIndex][attackType][1])
@@ -848,8 +850,6 @@ def combat():
               "' Vol'qaroth intones, his voice echoing from everywhere and "
               "nowhere.\n'Come, let oblivion remember your name… if it must.'")
         ENEMYFLAVORINDEX = 0
-
-
 
     # Combat loop
     while not ISENEMYDEAD:
