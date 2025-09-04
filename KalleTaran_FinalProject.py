@@ -34,7 +34,7 @@ MAPBASE = [
            "o","r","#","#","#","#","#","#"], # 3
           ["#","#","#","o","#","#","#","o","#","#","#","#","o","r","#","#","#","e",
            "#","#","#","#","#","#","#","#"], # 4
-          ["#","#","#","o","o","#","#","o","#","#","#","#","o","#","#","#","o","o",
+          ["#","#","#","o","q","#","#","o","#","#","#","#","o","#","#","#","o","o",
            "#","#","#","#","#","#","#","#"], # 5
           ["#","#","#","#","c","o","o","o","#","#","#","o","o","#","#","#","o","#",
            "#","#","#","#","#","#","#","#"], # 6
@@ -44,13 +44,13 @@ MAPBASE = [
            "m","c","#","#","#","#","#","#"], # 8
           ["#","#","#","o","#","#","#","#","o","o","e","o","o","o","e","o","o","#",
            "#","#","#","#","#","#","#","#"], # 9
-          ["#","#","#","e","w","#","#","#","e","#","#","#","#","#","o","#","#","#",
+          ["#","#","#","e","w","#","#","#","e","#","#","#","#","#","q","#","#","#",
            "#","#","#","#","#","#","#","#"], # 10
           ["#","#","#","o","#","#","#","#","o","#","#","#","#","#","c","#","#","#",
            "#","#","#","#","#","#","#","#"], # 11
           ["#","#","#","o","#","#","o","o","o","#","#","#","#","#","o","#","#","#",
            "#","#","#","#","#","#","#","#"], # 12
-          ["#","#","#","o","o","c","o","#","o","#","#","#","#","#","o","m","#","#",
+          ["#","#","#","o","o","c","q","#","o","#","#","#","#","#","o","m","#","#",
            "#","#","#","#","#","#","#","#"], # 13
           ["#","#","#","#","#","#","#","#","o","#","#","#","#","#","#","o","o","o",
            "#","#","#","#","#","#","#","#"], # 14
@@ -62,10 +62,10 @@ MAPBASE = [
            "#","#","#","#","#","#","#","#"], # 17
           ["#","#","#","#","#","#","#","#","#","o","o","o","o","o","#","#","o","#",
            "#","#","#","#","#","#","#","#"], # 18
-          ["#","#","#","#","#","#","o","o","o","m","#","#","#","o","#","#","o","#",
+          ["#","#","#","#","#","#","o","q","o","m","#","#","#","o","#","#","o","#",
            "o","#","#","#","#","#","#","#"], # 19
           ["#","#","#","#","#","#","o","#","#","#","#","#","#","c","o","o","e","o",
-           "m","o","e","#","#","#","#","#"], # 20
+           "m","q","e","#","#","#","#","#"], # 20
           ["#","#","#","#","#","#","o","#","#","#","#","#","#","o","#","#","#","#",
            "o","#","#","#","#","#","#","#"], # 21
           ["#","#","#","#","#","r","o","#","#","#","#","#","#","t","#","#","#","#",
@@ -91,8 +91,24 @@ MAPBASE = [
           # "w" - longsword
           # "l" - magical longsword
           # "x" - boss
+          # "q" - trap
 
 class Character:
+    """
+    Represents a character
+
+    @param type: str. The type of the character
+    @param health: int. The health of the character
+    @param attackBonus: int. The attack bonus of the character
+    @param armorClass: int. The armor class of the character
+    @param xpReward: int. The xp the character gives when killed
+    @param loot: int. The amount of gold the character gives when killed
+    @param weapon: Weapon. The weapon of the character
+    @param attackFlavor: list. Contains the basic attack flavor for the character
+    @param deathFlavor: list. Contains the death flavor for the character
+    @param treasure: int. The amount of gold the character has
+    @param name: str. The name of the character
+    """
     def __init__(self, type, health, attackBonus, armorClass,
                  xpReward, loot, weapon, attackFlavor, deathFlavor, treasure, name):
         self.health = health
@@ -111,6 +127,12 @@ class Character:
 
 
     def attack(self, target: object, enemyFlavorIndex=0):
+        """
+        Handles attacks between two characters
+
+        @param target: Character. The target being attacked
+        @param enemyFlavorIndex: int. Index of which enemy is attacking
+        """
         global ISGAMEOVER
         global ISENEMYDEAD
 
@@ -170,7 +192,7 @@ class PlayerCharacter(Character):
             # ["description", "hit effect", "miss effect"]
             ["You swing your blade in a clean arc, the steel "
              "singing through the air.", "The edge bites true, "
-                                         "cutting a sharp line through flesh and armor.",
+             "cutting a sharp line through flesh and armor.",
              "The blade slices only air as your target slips just "
              "out of reach."]
             ,
@@ -185,7 +207,7 @@ class PlayerCharacter(Character):
 
             ["You twist into a tight slash, the edge of your weapon"
              " flashing in the dim light.", "The strike lands "
-                                            "cleanly, drawing a spray of blood across the stone.",
+             "cleanly, drawing a spray of blood across the stone.",
              "You overextend, and the blade carves a scar into the "
              "ground instead."]
             ,
@@ -200,7 +222,7 @@ class PlayerCharacter(Character):
 
             ["You feint left, then step in and drive your blade "
              "toward your foe’s guard.", "The trick works. The blade"
-                                         " slips past their defense and strikes deep.",
+             " slips past their defense and strikes deep.",
              "They don’t fall for it, parrying your thrust with "
              "ease."]
         ]]
@@ -714,6 +736,18 @@ def mainProgram():
                          "The walls lean in slightly, like they’re listening.",
                          "You feel watched, though you’re alone... or so you hope."]
             print(random.choice(moveFlavor))
+        elif MAPBASE[char.curPos[0]][char.curPos[1]] == "q":
+            print("A volley of arrows shoot out of the wall at you!")
+            if random.randint(1,20) >= char.armorClass:
+                oldHealth = char.health
+                char.health -= random.randint(4,7)
+                print("One of them pierces your side!")
+                print("Health: {0}/{1} -> {2}/{1}".format(oldHealth,
+                                                          target.maxHealth,
+                                                          target.health))
+            else:
+                print("Luckily they glance off your armor!")
+            MAPBASE[char.curPos[0]][char.curPos[1]] = "o"
         elif MAPBASE[char.curPos[0]][char.curPos[1]] == "c":
             print("A good place to make camp. Maybe time for a rest.")
 
@@ -990,6 +1024,15 @@ def possibleMoves():
     char.moveOptions = [north, east, south, west]
 
 def save(player, enemy=None):
+    """
+        Saves the current game state (player, map, and optionally enemy) into a
+        pickle file. The user is prompted to choose a save slot.
+
+        @param player: PlayerCharacter. The current player character object to be
+        saved.
+        @param enemy: Character | None, optional. The current enemy character if in
+        combat, otherwise None.
+    """
     global MAPBASE
     while True:
         saveFile = input("Please select a save file:\nSlot 1\nSlot 2\nSlot "
@@ -1022,6 +1065,10 @@ def save(player, enemy=None):
             continue
 
 def load():
+    """
+    Loads a previously saved game state from a pickle file. The user is prompted to
+    choose one of three save slots or cancel.
+    """
     global MAPBASE
     global ENEMYFLAVORINDEX
     global char
@@ -1053,8 +1100,6 @@ def load():
                         break
                     print("Save 1 loaded.")
                     break
-
-
             except FileNotFoundError:
                 print("No save file found in that slot.")
                 continue
